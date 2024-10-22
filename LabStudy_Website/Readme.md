@@ -30,3 +30,5 @@
     - [lab_study.css](./lab_study.css)
     - [lab_study.html](./lab_study.html)
     - [predictions.json](./predictions.json)
+ 
+[註] 此網頁設置在本機端。
