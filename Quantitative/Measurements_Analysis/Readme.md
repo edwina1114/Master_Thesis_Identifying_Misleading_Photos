@@ -22,4 +22,4 @@
 2. **[Rmd_files](./Rmd_files)**  
    - 分析所有 Measurements (Reaction Time, Accuracy, Raw-TLX, Self-Efficacy, Custom Questionnaire,
 Rankings, Participants Demographic) 的 R 程式碼。   
-   - 使用的分析方法有：1-way ANOVA, 2-way ANOVA, Descriptive Statics of Ranking (mean rank)。
+   - 使用的分析方法有：Descriptive Statistics, 1-way ANOVA, 2-way ANOVA, Descriptive Statistics of Ranking (mean rank)。
