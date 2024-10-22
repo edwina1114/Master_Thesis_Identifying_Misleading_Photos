@@ -3,7 +3,7 @@
 ## 1. 資料夾
 
 - **[assets](./assets)**  
-  存放 Lab Study 使用的70張照片。（以Conditions為分類)
+  存放 Lab Study 使用的70張照片。（以Conditions為分類)  
   [註] 資料夾內有一個 Readme 提供照片檔名與 Conditions 名稱對照表。
 
 ## 2. 檔案說明
