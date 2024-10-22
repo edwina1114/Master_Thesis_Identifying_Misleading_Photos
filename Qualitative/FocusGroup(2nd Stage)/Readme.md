@@ -27,7 +27,8 @@ Common Visual Features 他們的 Cohen's kappa value 取平均值。
   使用 [NormalPhoto.csv](./NormalPhoto.csv) 來取得正常照片中提到的 Visual Features 的 Cohen's kappa value。
 
   - **[Average_Cohen.Rmd](./Average_Cohen.Rmd)**
-  將正常照片、誤導性照片都有提到的 Common Visual Features 列出來，並且取得兩類平均的 Cohen's kappa value。  
+  將正常照片、誤導性照片都有提到的 Common Visual Features 列出來，並且取得兩類平均的 Cohen's kappa value。
+
 [註]一定要先執行 [Cohen_Misleading.Rmd](./Cohen_Misleading.Rmd), [Cohen_Normal.Rmd](./Cohen_Normal.Rmd) 才能執行此 `Rmd` file。
 
 
