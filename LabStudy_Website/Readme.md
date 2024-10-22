@@ -27,7 +27,8 @@
   [註] 這些對應的 Visual Features 基準值 請參考 [Visual Features 基準值生成](../Benchmark_of_Visual_Features)。
 
 - **[lab_study.js](./lab_study.js)**  
-  JavaScript 檔案，負責網頁的互動行為與功能。  
+  JavaScript 檔案，負責網頁的互動行為與功能。
+  
   分別會讀取以下檔案:
   - [lab_study.html](./lab_study.html)
   - [lab_study.css](./lab_study.css)
