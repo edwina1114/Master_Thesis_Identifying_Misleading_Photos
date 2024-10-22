@@ -1,0 +1,378 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gplots)
+library(ggpubr)
+library(emmeans)
+library(lmerTest)
+```
+
+```{r}
+Response_Time <- read_csv("../Data/MeasurementsFiltered/Response_ReactionTime.csv")
+# view(Response_Time)
+print(Response_Time)
+
+# 只取PE中第二次的時間
+PE_Second <- Response_Time[!(Response_Time$Status %in% c("PEM", "PECon", "PECre")), ]
+print(PE_Second)
+
+# 只有PE的所有狀態
+PE_filtered_data <- Response_Time %>% filter(grepl("PE", Condition))
+print(PE_filtered_data)
+```
+
+## Sumarry & Standards derivation (PE只取第二次的)
+
+```{r}
+summary(PE_Second) #看各列的資料(Min, 1st Qu, Median, Mean, 3rd Qu, Max)
+
+cat("\n")
+cat("Standard Derivation of Response Time = ",sd(PE_Second$ReactionTime))
+```
+
+
+### PlotMeans (PE狀態只取第二次的秒數)
+
+```{r}
+# Reorder the levels of the "Condition" factor so that "Control" comes first
+PE_Second <- PE_Second %>%
+  mutate(Condition = factor(Condition, levels = c("Control", "CCTCon", "CCTCre", "CCTM", "PECon", "PECre", "PEM")))
+
+plotmeans(PE_Second$ReactionTime ~ PE_Second$Condition,
+          main = "Reaction Time of All Conditions",
+          xlab = "Condition",
+          ylab = "Reaction Time (s)",
+          ylim = c(5, 8),
+          n.label = FALSE,
+          connect = FALSE)
+
+
+# Summary statistics
+rtall_stats <- PE_Second %>%
+  group_by(Condition, Placement, LabelType) %>%
+  summarize(
+    mean_reaction_time = mean(ReactionTime),
+    sd_reaction_time = sd(ReactionTime),
+    n = n(),  # Sample size for each group
+    se_reaction_time = sd_reaction_time / sqrt(n),  # Standard Error
+    ci_reaction_time = qt(0.975, df = n - 1) * se_reaction_time  # 95% Confidence Interval
+  )
+print(rtall_stats)
+
+# Define custom colors for each combination of Placement and LabelType
+custom_colors <- c(
+  "Control" = "#fa75a2",
+  "CCTCon" = "#a6cee3",  # light blue
+  "CCTCre" = "#1f78b4",  # medium blue
+  "CCTM" = "#2e4194",  # dark blue
+  "PECon" = "#b2df8a",  # light green
+  "PECre" = "#33a02c",  # medium green
+  "PEM" = "#006400"  # dark green
+)
+
+# Modify the plot to use confidence intervals instead of standard deviation
+rtall <- ggplot(data = rtall_stats, aes(x = Condition, y = mean_reaction_time, fill = Condition)) + 
+  scale_fill_manual(values = custom_colors) +
+  geom_col(width = 0.6) +
+  geom_errorbar(data = rtall_stats, 
+                aes(x = Condition, ymin = mean_reaction_time - ci_reaction_time, ymax = mean_reaction_time + ci_reaction_time), width = 0.3, color = "black") +
+  labs(x = "Condition", y = "Reaction Time (s)") +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.line = element_line(color = "black", size = 0.5),  # Show axis lines
+    axis.ticks = element_line(color = "black", size = 0.5),  # Show tick lines
+    axis.ticks.length = unit(0.2, "cm")  # Set tick length
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+rtall
+
+# ggsave(rtall, 
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/ReactionTime/Reaction Time of All Conditions.pdf",
+#        device = "pdf" )
+
+
+```
+
+
+## Two-Way ANOVA (PE Second Time)
+- Mixed Effects Models
+
+```{r}
+Exclude_Control_PE_Second <- PE_Second %>% 
+  filter(!(LabelType == "Control" & Placement == "Control"))
+Exclude_Control_PE_Second
+table(Exclude_Control_PE_Second$LabelType, Exclude_Control_PE_Second$Placement)
+
+# Fit the linear mixed-effects models
+RT_TwoWay_MEM <- lmer(ReactionTime ~ LabelType * Placement + (1|ParticipantId), data = Exclude_Control_PE_Second)
+
+# Perform ANOVA
+anova(RT_TwoWay_MEM)
+
+# Post-Hoc
+RT_TwoWay_pairwise <- pairs(emmeans(RT_TwoWay_MEM, ~ LabelType * Placement))
+print(RT_TwoWay_pairwise)
+
+RT_TwoWay_summary_pairwise <- summary(RT_TwoWay_pairwise)
+# str(summary_pairwise)
+#print(summary_pairwise$p.value)
+
+significant_contrasts <- RT_TwoWay_summary_pairwise$contrast[RT_TwoWay_summary_pairwise$p.value <= 0.05]
+
+significant_df <- RT_TwoWay_summary_pairwise$df[RT_TwoWay_summary_pairwise$p.value <= 0.05]
+
+significant_tratio <- RT_TwoWay_summary_pairwise$t.ratio[RT_TwoWay_summary_pairwise$p.value <= 0.05]
+
+significant_p_values <- RT_TwoWay_summary_pairwise$p.value[RT_TwoWay_summary_pairwise$p.value <= 0.05]
+significant_p_values <- round(significant_p_values, 3)
+
+significant_results <- data.frame(contrast = significant_contrasts, df = significant_df, t.ratio = significant_tratio, p.value = significant_p_values)
+
+print(significant_results)
+```
+
+
+
+## Plotmeans
+```{r}
+plotmeans(PE_Second$ReactionTime ~ PE_Second$LabelType,
+          main = "Reaction Time in Different Label Types",
+          xlab = "Label Type",
+          ylab = "Reaction Time (s)",
+          ylim = c(5,8),
+          n.label = FALSE,
+          connect = FALSE)  
+
+
+plotmeans(PE_Second$ReactionTime ~ PE_Second$Placement,
+          main = "Reaction Time in Different Placements",
+          xlab = "Placement",
+          ylab = "Reaction Time (s)",
+          ylim = c(5,7),
+          n.label = FALSE,
+          connect = FALSE)  
+```
+
+
+## Interaction of Label Type and Placement
+
+```{r}
+# Label Type
+labeltype_comparisons <- pairs(emmeans(RT_TwoWay_MEM, "LabelType"))
+summary(labeltype_comparisons)
+
+label_stats <- Exclude_Control_PE_Second %>%
+  group_by(LabelType) %>%
+  summarize(
+    lt_mean_reaction_time = round(mean(ReactionTime), 2),
+    lt_sd_reaction_time = round(sd(ReactionTime), 2),
+    n = n(),  # Sample size for each group
+    lt_se_reaction_time = lt_sd_reaction_time / sqrt(n),  # Standard Error
+    lt_ci_reaction_time = qt(0.975, df = n - 1) * lt_se_reaction_time  # 95% Confidence Interval
+  )
+print(label_stats)
+
+# Plot the boxplot with error bars
+rt_lt <- ggplot(data = label_stats, aes(x = LabelType, y = lt_mean_reaction_time, fill = LabelType)) + 
+  scale_fill_brewer(palette="Greys") +
+  geom_col(width = 0.6) +
+  geom_errorbar(aes(x = LabelType, ymin = lt_mean_reaction_time - lt_ci_reaction_time, ymax =  lt_mean_reaction_time + lt_ci_reaction_time), width = 0.2, color = "black") +
+  labs(x = "(A) Label Type", y = "Reaction Time (s)") +
+  ylim(0, 10) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+rt_lt
+
+
+# Placement
+pairs(emmeans(RT_TwoWay_MEM, "Placement"))
+
+placement_stats <- Exclude_Control_PE_Second %>%
+  group_by(Placement) %>%
+  summarize(
+    pt_mean_reaction_time = round(mean(ReactionTime), 2),
+    pt_sd_reaction_time = round(sd(ReactionTime), 2),
+    n = n(),  # Sample size for each group
+    pt_se_reaction_time = pt_sd_reaction_time / sqrt(n),  # Standard Error
+    pt_ci_reaction_time = qt(0.975, df = n - 1) * pt_se_reaction_time  # 95% Confidence Interval
+  )
+print(placement_stats)
+
+# Plot the boxplot with error bars
+rt_pt <- ggplot(data = placement_stats, aes(x = Placement, y = pt_mean_reaction_time, fill = Placement)) + 
+  scale_fill_manual(values = c("Concurrent" = "#1f78b4",
+                               "Post-Exposure" = "#33a02c")) + 
+  geom_col(width = 0.4) +  # Set the bar color here
+  geom_errorbar(data = placement_stats, aes(x = Placement, ymin = pt_mean_reaction_time - pt_ci_reaction_time, ymax = pt_mean_reaction_time + pt_ci_reaction_time), width = 0.2, color = "black") +
+  labs(x = "(B) Placement") +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_blank(),  # 取消顯示 y 軸名稱
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+  
+rt_fig <- ggarrange(
+  rt_lt, rt_pt,
+  ncol = 2, nrow = 1,
+  align = "h"  # 垂直對齊
+)
+rt_fig + theme(plot.margin = unit(c(0.3, 0.2, 0.1, 0.2), "inches"))
+
+# ggsave(rt_fig, 
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/ReactionTime/Reaction Time of Lable Type and Placement.pdf",
+#        device = "pdf" )
+
+```
+
+
+
+```{r}
+RT_MC <- PE_Second %>% filter(grepl("Mix", LabelType) & grepl("Concurrent", Placement))
+summary(RT_MC)
+sd(RT_MC$ReactionTime)
+```
+
+## One-Way ANOVA (Include Control, PE Second Time): F(6,270) = 4.9, 8.954e-05
+- Mixed Effects Models
+- Report ANOVA result: `F(num df, denom df)=F Value, p-value`
+
+```{r}
+# Fit the mixed-effects model
+RT_OneWay_MEM <- lmer(ReactionTime ~ Condition + (1|ParticipantId), data = PE_Second)
+anova(RT_OneWay_MEM)
+
+
+# Post-Hoc
+RT_OneWay_pairwise <- pairs(emmeans(RT_OneWay_MEM, ~ Condition))
+print(RT_OneWay_pairwise)
+
+RT_OneWay_summary_pairwise <- summary(RT_OneWay_pairwise)
+# str(summary_pairwise)
+# print(summary_pairwise$p.value)
+
+RT_OneWay_significant_contrasts <- RT_OneWay_summary_pairwise$contrast[RT_OneWay_summary_pairwise$p.value <= 0.05]
+
+RT_OneWay_significant_df <- RT_OneWay_summary_pairwise$df[RT_OneWay_summary_pairwise$p.value <= 0.05]
+
+RT_OneWay_significant_tratio <- RT_OneWay_summary_pairwise$t.ratio[RT_OneWay_summary_pairwise$p.value <= 0.05]
+
+RT_OneWay_significant_p_values <- RT_OneWay_summary_pairwise$p.value[RT_OneWay_summary_pairwise$p.value <= 0.05]
+RT_OneWay_significant_p_values <- round(RT_OneWay_significant_p_values, 3)
+
+RT_OneWay_significant_results <- data.frame(contrast = RT_OneWay_significant_contrasts, df = RT_OneWay_significant_df, t.ratio = RT_OneWay_significant_tratio, p.value = RT_OneWay_significant_p_values)
+
+print(RT_OneWay_significant_results)
+```
+
+### PlotMeans (Post-Exposure 組間)
+
+```{r}
+PE_filtered_data <- PE_filtered_data %>%
+  mutate(
+    Status = case_when(
+      Status %in% c("PECre", "PECon", "PEM") ~ "1st",
+      Status %in% c("PECre_Post-Exposure", "PECon_Post-Exposure", "PEM_Post-Exposure") ~ "2nd",
+      TRUE ~ as.character(Status)  # 如果有其他狀況，保留原狀態
+    ))
+
+rtpecom_stats <- PE_filtered_data %>%
+  group_by(Status, Condition) %>%
+  summarize(
+    pe_mean_reaction_time = round(mean(ReactionTime), 2),
+    pe_sd_reaction_time = round(sd(ReactionTime), 2),
+    n = n(),  # Sample size for each group
+    pe_se_reaction_time = pe_sd_reaction_time / sqrt(n),  # Standard Error
+    pe_ci_reaction_time = qt(0.975, df = n - 1) * pe_se_reaction_time  # 95% Confidence Interval
+  )
+print(rtpecom_stats)
+
+# 繪製圖形
+rtpecom_plot <- ggplot(data = rtpecom_stats, aes(x = Condition, y = pe_mean_reaction_time, fill = Status)) + 
+  scale_fill_brewer(palette="Reds") +
+  geom_bar(stat="identity", position=position_dodge(width = 0.9), width = 0.9) +
+  geom_errorbar(aes(ymin = pe_mean_reaction_time - pe_ci_reaction_time, ymax = pe_mean_reaction_time + pe_ci_reaction_time), width = 0.3, color = "black", position=position_dodge(width = 0.9)) +
+  labs(x = "Condition", y = "Reaction Time (s)") +
+  ylim(0, 10) +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  )
+
+rtpecom_plot
+
+# ggsave(rtpecom_plot,
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/ReactionTime/Reaction Time In Post-Exposure Comparison.pdf",
+#        device = "pdf" )
+
+```
+
+
+## One-Way ANOVA (Post-Exposure 組間): F(5,231) = 2.4203, 0.03659
+- Mixed Effects Models
+- Report ANOVA result: `F(num df, denom df)=F Value, p-value`
+
+```{r}
+RT_PE_OneWay_MEM <- lmer(ReactionTime ~ Status + (1|ParticipantId), data = PE_filtered_data)
+anova(RT_PE_OneWay_MEM)
+
+# Post-Hoc
+RT_PE_pairwise <- pairs(emmeans(RT_PE_OneWay_MEM, ~ Status))
+print(RT_PE_pairwise)
+
+RT_PE_summary_pairwise <- summary(RT_PE_pairwise)
+# str(summary_pairwise)
+# print(summary_pairwise$p.value)
+
+RT_PE_significant_contrasts <- RT_PE_summary_pairwise$contrast[RT_PE_summary_pairwise$p.value <= 0.05]
+
+RT_PE_significant_df <- RT_PE_summary_pairwise$df[RT_PE_summary_pairwise$p.value <= 0.05]
+
+RT_PE_significant_tratio <- RT_PE_summary_pairwise$t.ratio[RT_PE_summary_pairwise$p.value <= 0.05]
+
+RT_PE_significant_p_values <- RT_PE_summary_pairwise$p.value[RT_PE_summary_pairwise$p.value <= 0.05]
+RT_PE_significant_p_values <- round(RT_PE_significant_p_values, 3)
+
+RT_PE_significant_results <- data.frame(contrast = RT_PE_significant_contrasts, df = RT_PE_significant_df, t.ratio = RT_PE_significant_tratio, p.value = RT_PE_significant_p_values)
+
+print(RT_PE_significant_results)
+```

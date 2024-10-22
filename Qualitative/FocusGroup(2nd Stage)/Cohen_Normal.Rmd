@@ -1,0 +1,82 @@
+```{r}
+library(irr)
+
+# read csv file
+true <- read.csv("NormalPhoto.csv", stringsAsFactors = F)
+ncol(true) # 看總共有幾行
+```
+
+```{r}
+bright <- kappa2(true[2:148, 1:2])
+
+light <- kappa2(true[2:148, 3:4])
+
+contrast <- kappa2(true[2:148, 5:6])
+
+color <- kappa2(true[2:148, 7:8])
+
+hue <- kappa2(true[2:148, 9:10])
+
+vibrant <- kappa2(true[2:148, 11:12])
+
+saturation <- kappa2(true[2:148, 13:14])
+
+blur <- kappa2(true[2:148, 15:16])
+
+focus <- kappa2(true[2:148, 17:18])
+
+composition <- kappa2(true[2:148, 19:20])
+
+angle <- kappa2(true[2:148, 21:22])
+
+plating <- kappa2(true[2:148, 23:24])
+
+portion <- kappa2(true[2:148, 25:26])
+
+nonartificial <- kappa2(true[2:148, 27:28])
+
+compare <- kappa2(true[2:148, 29:30])
+```
+
+
+```{r}
+df_true <- data.frame(element = c("bright 亮度", "light 光線", "contrast 對比度", 
+                                  "color 顏色", "hue 色調", "vibrant 鮮豔度", 
+                                  "saturation 飽和度", "blur 霧化", "focus 聚焦", 
+                                  "composition 構圖", "angle 角度", "plating 擺盤", 
+                                  "portion 份量", "nonartificial 自然",
+                                  "compare 比較實際情況"),
+                      
+                      kappa_value = c(bright$value, light$value, contrast$value,
+                                                       color$value, hue$value, vibrant$value, 
+                                                       saturation$value, blur$value, focus$value,
+                                                       composition$value, angle$value, plating$value,
+                                                       portion$value, nonartificial$value, 
+                                                       compare$value
+                                                       ),
+                 
+                      chinese = c("亮度", "光線", "對比度", "顏色", "色調", "鮮豔度", 
+                                                  "飽和度", "霧化", "聚焦", "構圖", "角度", "擺盤", 
+                                                  "份量", "自然", "比較實際情況"
+                                                   )
+                 )
+
+df_true$kappa_value <- round(df_true$kappa_value, 2)
+
+df_true
+
+cat("整體的kappa value: ", mean(df_true$kappa_value), "\n")
+```
+
+
+```{r}
+print(df_true[df_true$kappa_value > 0.8, ])
+
+print(df_true[df_true$kappa_value <= 0.8 & df_true$kappa_value > 0.6, ])
+
+print(df_true[df_true$kappa_value <= 0.6 & df_true$kappa_value > 0.4, ])
+
+print(df_true[df_true$kappa_value <= 0.4 & df_true$kappa_value > 0.2, ])
+
+```
+

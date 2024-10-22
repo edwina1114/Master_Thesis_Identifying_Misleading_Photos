@@ -1,0 +1,738 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gplots)
+library(lmerTest)
+library(emmeans)
+library(cowplot)
+```
+
+```{r}
+Response_Time <- read_csv("../Data/MeasurementsFiltered/Response_ReactionTime.csv")
+Accuracy <- read_csv("../Data/MeasurementsFiltered/Accuracy.csv")
+
+# 只取PE中第二次的時間
+PE_Second <- Response_Time[!(Response_Time$Status %in% c("PEM", "PECon", "PECre")), ]
+
+# 只有PE的所有狀態
+PE_filtered_data <- Response_Time %>% filter(grepl("PE", Condition))
+
+print(Response_Time)
+print(Accuracy)
+print(PE_Second)
+print(PE_filtered_data)
+```
+
+# Calculative_Response_Statistic
+```{r}
+# Assuming Calculative_Response_Statistic has columns for each status and counts
+unique_ids <- unique(Response_Time$ParticipantId)
+statuses <- unique(Response_Time$Status)
+columns <- c("ParticipantId", sapply(statuses, function(x) paste0(x, c("StrictCount", "TolerantCount", "StrictRate", "TolerantRate"))))
+
+# Initialize the data frame
+Calculative_Response_Statistic <- as.data.frame(matrix(0, nrow = length(unique_ids), ncol = length(columns)))
+colnames(Calculative_Response_Statistic) <- columns
+Calculative_Response_Statistic$ParticipantId <- unique_ids
+
+
+# Ensure the required columns exist
+for (status in statuses) {
+  Calculative_Response_Statistic[paste0(status, "StrictCount")] <- 0
+  Calculative_Response_Statistic[paste0(status, "TolerantCount")] <- 0
+}
+
+for (i in seq(1, nrow(Response_Time))) {
+  current_data <- Response_Time[i, ]
+  current_accuracy <- Accuracy[Accuracy$PictureName == current_data$PictureName, "Answer"]
+  
+  if (length(current_accuracy) > 0) {
+    status <- as.character(current_data$Status)
+    id <- as.character(current_data$ParticipantId)
+    response <- as.numeric(current_data$Response) # Ensure response is numeric
+    
+    # Ensure the participant ID exists in Calculative_Response_Statistic
+    if (id %in% Calculative_Response_Statistic$ParticipantId) {
+      # Update StrictCount and TolerantCount
+      if (response == current_accuracy) {
+        Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "StrictCount")] <- 
+          Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "StrictCount")] + 1
+        
+        Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "TolerantCount")] <- 
+          Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "TolerantCount")] + 1
+      } else if (any(abs(response - current_accuracy) == 1)) {
+        Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "TolerantCount")] <- 
+          Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "TolerantCount")] + 1
+      }
+      
+      # Calculate and update StrictRate and TolerantRate
+      strict_count <- Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "StrictCount")]
+      tolerant_count <- Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "TolerantCount")]
+      
+      Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "StrictRate")] <- round(strict_count / 10, 2)
+      Calculative_Response_Statistic[Calculative_Response_Statistic$ParticipantId == id, paste0(status, "TolerantRate")] <- round(tolerant_count / 10, 2)
+    } else {
+      print(paste("ID", id, "not found in Calculative_Response_Statistic"))
+    }
+  }
+}
+
+print(Calculative_Response_Statistic)
+
+```
+
+
+## 整理 Calculative_Response_Statistic
+
+```{r}
+Calculative_Response_Statistic_long <- gather(Calculative_Response_Statistic, Type, Value, -ParticipantId)
+
+Calculative_Response_Statistic_long$Condition <- case_when(
+  grepl("CCTCre", Calculative_Response_Statistic_long$Type) ~ "CCTCre",
+  grepl("CCTCon", Calculative_Response_Statistic_long$Type) ~ "CCTCon",
+  grepl("CCTM", Calculative_Response_Statistic_long$Type) ~ "CCTM",
+  grepl("PECre", Calculative_Response_Statistic_long$Type) ~ "PECre",
+  grepl("PECon", Calculative_Response_Statistic_long$Type) ~ "PECon",
+  grepl("PEM", Calculative_Response_Statistic_long$Type) ~ "PEM",
+  grepl("Control", Calculative_Response_Statistic_long$Type) ~ "Control",
+  TRUE ~ NA_character_
+)
+
+Calculative_Response_Statistic_long$Placement <- case_when(
+  grepl("CCTCre|CCTCon|CCTM", Calculative_Response_Statistic_long$Type) ~ "Concurrent",
+  grepl("PECre|PECon|PEM", Calculative_Response_Statistic_long$Type) ~ "Post-Exposure",
+  grepl("Control", Calculative_Response_Statistic_long$Type) ~ "Control",
+  TRUE ~ NA_character_
+)
+
+Calculative_Response_Statistic_long$LabelType <- case_when(
+  grepl("CCTCre|PECre", Calculative_Response_Statistic_long$Type) ~ "Credibility",
+  grepl("CCTCon|PECon", Calculative_Response_Statistic_long$Type) ~ "Contextual",
+  grepl("CCTM|PEM", Calculative_Response_Statistic_long$Type) ~ "Mixed",
+  grepl("Control", Calculative_Response_Statistic_long$Type) ~ "Control",
+  TRUE ~ NA_character_
+)
+
+print(Calculative_Response_Statistic_long)
+
+Exclude_Control_Response <- Calculative_Response_Statistic_long[!(Calculative_Response_Statistic_long$Condition %in% "Control"), ]
+print(Exclude_Control_Response)
+
+# Strict without Control
+Strict_Without_data <- Exclude_Control_Response[grepl("StrictRate", Exclude_Control_Response$Type) & !grepl("Post-Exposure", Exclude_Control_Response$Type), ]
+print(Strict_Without_data)
+
+# Strict with Control
+Strict_With_data <- Calculative_Response_Statistic_long[grepl("StrictRate", Calculative_Response_Statistic_long$Type) & !grepl("Post-Exposure", Calculative_Response_Statistic_long$Type), ]
+print(Strict_With_data)
+
+# Tolerant without Control
+Tolerant_Without_data <- Exclude_Control_Response[grepl("TolerantRate", Exclude_Control_Response$Type) & !grepl("Post-Exposure", Exclude_Control_Response$Type), ]
+print(Tolerant_Without_data)
+
+# Tolerant with Control
+Tolerant_With_data <- Calculative_Response_Statistic_long[grepl("TolerantRate", Calculative_Response_Statistic_long$Type) & !grepl("Post-Exposure", Calculative_Response_Statistic_long$Type), ]
+print(Tolerant_With_data)
+
+```
+
+## Descriptive Statistics
+
+```{r}
+summary(Strict_With_data)
+cat("Standard derivation of Strict Accuracy: ", sd(Strict_With_data$Value))
+cat("\n")
+
+summary(Tolerant_With_data)
+cat("Standard derivation of Tolerant Accuracy: ", sd(Tolerant_With_data$Value
+))
+```
+
+
+## PlotMeans: StrictRate, TolerantRate
+- Strict Rate
+
+```{r}
+# Reorder the levels of the "Condition" factor so that "Control" comes first
+Strict_With_data <- Strict_With_data %>%
+  mutate(Condition = factor(Condition, levels = c("Control", "CCTCon", "CCTCre", "CCTM", "PECon", "PECre", "PEM")))
+
+
+saall_stats <- Strict_With_data %>%
+  group_by(Condition, Placement) %>%
+  summarize(
+    mean_sa = round(mean(Value*100), 2),
+    sd_sa = round(sd(Value*100), 2),
+    n = n(),  # Sample size for each group
+    se_sa = sd_sa / sqrt(n),  # Standard Error
+    ci_sa = qt(0.975, df = n - 1) * se_sa  # 95% Confidence Interval
+  )
+print(saall_stats)
+
+# Define custom colors for each combination of Placement and LabelType
+custom_colors <- c(
+  "Control" = "#fa75a2",
+  "CCTCon" = "#a6cee3",  # light blue
+  "CCTCre" = "#1f78b4",  # medium blue
+  "CCTM" = "#2e4194",  # dark blue
+  "PECon" = "#b2df8a",  # light green
+  "PECre" = "#33a02c",  # medium green
+  "PEM" = "#006400"  # dark green
+)
+
+# Plot the boxplot with error bars
+saall <- ggplot(data = saall_stats, aes(x = Condition, y = mean_sa, fill = Condition)) + 
+  scale_fill_manual(values = custom_colors) +
+  geom_col(width = 0.6) +
+  geom_errorbar(data = saall_stats, 
+                aes(x = Condition, ymin = mean_sa - ci_sa, ymax = mean_sa + ci_sa), width = 0.3, color = "black") +
+  labs(x = "Condition", y = "Accuracy (%)") +
+  ylim(0,100) +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+saall
+
+# ggsave(saall,
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Accuracy/Strict/Strict Accuracy vs All Conditions.pdf",
+#        device = "pdf" )
+```
+
+- Tolerant Rate
+
+```{r}
+# Reorder the levels of the "Condition" factor so that "Control" comes first
+Tolerant_With_data <- Tolerant_With_data %>%
+  mutate(Condition = factor(Condition, levels = c("Control", "CCTCon", "CCTCre", "CCTM", "PECon", "PECre", "PEM")))
+
+taall_stats <- Tolerant_With_data %>%
+  group_by(Condition, Placement) %>%
+  summarize(
+    mean_ta = round(mean(Value*100), 2),
+    sd_ta = round(sd(Value*100), 2),
+    n = n(),  # Sample size for each group
+    se_ta = sd_ta / sqrt(n) ,  # Standard Error
+    ci_ta = qt(0.975, df = n - 1) * se_ta  # 95% Confidence Interval
+  )
+print(taall_stats)
+
+# Define custom colors for each combination of Placement and LabelType
+custom_colors <- c(
+  "Control" = "#fa75a2",
+  "CCTCon" = "#a6cee3",  # light blue
+  "CCTCre" = "#1f78b4",  # medium blue
+  "CCTM" = "#2e4194",  # dark blue
+  "PECon" = "#b2df8a",  # light green
+  "PECre" = "#33a02c",  # medium green
+  "PEM" = "#006400"  # dark green
+)
+
+# Plot the boxplot with error bars
+taall <- ggplot(data = taall_stats, aes(x = Condition, y = mean_ta, fill = Condition)) + 
+  scale_fill_manual(values = custom_colors) + 
+  geom_col(width = 0.6) +
+  geom_errorbar(data = taall_stats, 
+                aes(x = Condition, ymin = mean_ta - ci_ta, ymax = mean_ta + ci_ta), width = 0.3, color = "black") +
+  labs(x = "Condition", y = "Accuracy (%)") +
+  ylim(0,100) +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+taall
+# ggsave(taall,
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Accuracy/Tolerant/Tolerant Accuracy vs All Conditions.pdf",
+#        device = "pdf" )
+```
+
+
+## Two-Way ANOVA (Strict without Control)
+
+```{r}
+Strict_TwoWay_MEM <- lmer(Value ~ Placement * LabelType + (1|ParticipantId), data = Strict_Without_data)
+anova(Strict_TwoWay_MEM)
+
+# Post-hoc
+Strict_TwoWay_pairwise <- pairs(emmeans(Strict_TwoWay_MEM, ~ Placement * LabelType))
+print(Strict_TwoWay_pairwise)
+Strict_TwoWay_summary_pairwise <- summary(Strict_TwoWay_pairwise)
+# str(summary_pairwise)
+#print(summary_pairwise$p.value)
+
+Strict_TwoWay_significant_contrasts <- Strict_TwoWay_summary_pairwise$contrast[Strict_TwoWay_summary_pairwise$p.value <= 0.05]
+
+Strict_TwoWay_significant_df <- Strict_TwoWay_summary_pairwise$df[Strict_TwoWay_summary_pairwise$p.value <= 0.05]
+
+Strict_TwoWay_significant_tratio <- Strict_TwoWay_summary_pairwise$t.ratio[Strict_TwoWay_summary_pairwise$p.value <= 0.05]
+
+Strict_TwoWay_significant_p_values <- Strict_TwoWay_summary_pairwise$p.value[Strict_TwoWay_summary_pairwise$p.value <= 0.05]
+Strict_TwoWay_significant_p_values <- round(Strict_TwoWay_significant_p_values, 3)
+
+Strict_TwoWay_significant_results <- data.frame(contrast = Strict_TwoWay_significant_contrasts, df = Strict_TwoWay_significant_df, t.ratio = Strict_TwoWay_significant_tratio, p.value = Strict_TwoWay_significant_p_values)
+
+print(Strict_TwoWay_significant_results)
+```
+
+## Interaction of Label Type and Placement
+
+```{r}
+pairs(emmeans(Strict_TwoWay_MEM, "LabelType"))
+pairs(emmeans(Strict_TwoWay_MEM, "Placement"))
+
+salabel_stats <- Strict_Without_data %>%
+  group_by(LabelType) %>%
+  summarize(
+    mean_salabel = round(mean(Value*100), 2),
+    sd_salabel = round(sd(Value*100), 2),
+    n = n(),  # Sample size for each group
+    se_salabel = sd_salabel / sqrt(n) ,  # Standard Error
+    ci_salabel = qt(0.975, df = n - 1) * se_salabel  # 95% Confidence Interval
+  )
+print(salabel_stats)
+
+# Plot the boxplot with error bars
+sa_lt <- ggplot(data = salabel_stats, aes(x = LabelType, y = mean_salabel, fill = LabelType)) + 
+  scale_fill_brewer(palette="Greys") +
+  geom_col(width = 0.6) +
+  geom_errorbar(data = salabel_stats, 
+                aes(x = LabelType, ymin = mean_salabel - ci_salabel, ymax =  mean_salabel + ci_salabel), width = 0.2, color = "black") +
+  labs(x = "(A) Label Type", y = "Accuracy (%)") +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+saplacement_stats <- Strict_Without_data %>%
+  group_by(Placement) %>%
+  summarize(
+    mean_saplacement = round(mean(Value*100), 2),
+    sd_saplacement = round(sd(Value*100), 2),
+    n = n(),  # Sample size for each group
+    se_saplacement = sd_saplacement / sqrt(n) ,  # Standard Error
+    ci_saplacement = qt(0.975, df = n - 1) * se_saplacement  # 95% Confidence Interval
+  )
+print(saplacement_stats)
+
+# Plot the boxplot with error bars
+sa_pt <- ggplot(data = saplacement_stats, aes(x = Placement, y = mean_saplacement, fill = Placement)) + 
+  scale_fill_manual(values = c("Concurrent" = "#1f78b4",
+                               "Post-Exposure" = "#33a02c")) + 
+  geom_col(width = 0.4) +
+  geom_errorbar(data = saplacement_stats, 
+                aes(x = Placement, ymin = mean_saplacement - ci_saplacement, ymax =  mean_saplacement + ci_saplacement), width = 0.2, color = "black") +
+  labs(x = "(B) Placement") +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_blank(),  # 取消顯示 y 軸名稱
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+sa_fig <- ggarrange(
+  sa_lt, sa_pt,
+  ncol = 2, nrow = 1,
+  align = "h"  # 垂直對齊
+)
+sa_fig + theme(plot.margin = unit(c(0.3, 0.2, 0.1, 0.2), "inches"))
+
+# ggsave(sa_fig, 
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Accuracy/Strict/Strict Accuracy of Lable Type and Placement.pdf",
+#        device = "pdf" )
+```
+
+
+## Two-Way ANOVA (Tolerant without Control)
+
+```{r}
+Tolerant_TwoWay_MEM <- lmer(Value ~ Placement * LabelType + (1|ParticipantId), data = Tolerant_Without_data)
+Tolerant_TwoWay_LabelType <- lmer(Value ~ LabelType + (1|ParticipantId), data = Tolerant_Without_data)
+Tolerant_TwoWay_Placement <- lmer(Value ~ Placement + (1|ParticipantId), data = Tolerant_Without_data)
+
+anova(Tolerant_TwoWay_MEM)
+
+# Post-hoc
+Tolerant_TwoWay_pairwise <- pairs(emmeans(Tolerant_TwoWay_MEM, ~ Placement * LabelType))
+print(Tolerant_TwoWay_pairwise)
+Tolerant_TwoWay_summary_pairwise <- summary(Tolerant_TwoWay_pairwise)
+# str(summary_pairwise)
+#print(summary_pairwise$p.value)
+
+Tolerant_TwoWay_significant_contrasts <- Tolerant_TwoWay_summary_pairwise$contrast[Tolerant_TwoWay_summary_pairwise$p.value <= 0.05]
+
+Tolerant_TwoWay_significant_df <- Tolerant_TwoWay_summary_pairwise$df[Tolerant_TwoWay_summary_pairwise$p.value <= 0.05]
+
+Tolerant_TwoWay_significant_tratio <- Tolerant_TwoWay_summary_pairwise$t.ratio[Tolerant_TwoWay_summary_pairwise$p.value <= 0.05]
+
+Tolerant_TwoWay_significant_p_values <- Tolerant_TwoWay_summary_pairwise$p.value[Tolerant_TwoWay_summary_pairwise$p.value <= 0.05]
+Tolerant_TwoWay_significant_p_values <- round(Tolerant_TwoWay_significant_p_values, 3)
+
+Tolerant_TwoWay_significant_results <- data.frame(contrast = Tolerant_TwoWay_significant_contrasts, df = Tolerant_TwoWay_significant_df, t.ratio = Tolerant_TwoWay_significant_tratio, p.value = Tolerant_TwoWay_significant_p_values)
+
+print(Tolerant_TwoWay_significant_results)
+```
+
+## Interaction of Label Type and Placement
+
+```{r}
+pairs(emmeans(Tolerant_TwoWay_MEM, "LabelType"))
+pairs(emmeans(Tolerant_TwoWay_MEM, "Placement"))
+
+talabel_stats <- Tolerant_Without_data %>%
+  group_by(LabelType) %>%
+  summarize(
+    mean_talabel = round(mean(Value*100), 2),
+    sd_talabel = round(sd(Value*100), 2),
+    n = n(),  # Sample size for each group
+    se_talabel = sd_talabel / sqrt(n) ,  # Standard Error
+    ci_talabel = qt(0.975, df = n - 1) * se_talabel  # 95% Confidence Interval
+  )
+print(talabel_stats)
+
+# Plot the boxplot with error bars
+ta_lt <- ggplot(data = talabel_stats, aes(x = LabelType, y = mean_talabel, fill = LabelType)) + 
+  scale_fill_brewer(palette="Greys") +
+  geom_col(width = 0.6) +
+  geom_errorbar(aes(x = LabelType, ymin = mean_talabel - ci_talabel, ymax =  mean_talabel + ci_talabel), width = 0.2, color = "black") +
+  labs(x = "(A) Label Type", y = "Accuracy (%)") +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+taplacement_stats <- Tolerant_Without_data %>%
+  group_by(Placement) %>%
+  summarize(
+    mean_taplacemnt = round(mean(Value*100), 2),
+    sd_taplacemnt = round(sd(Value*100), 2),
+    n = n(),  # Sample size for each group
+    se_taplacemnt = sd_taplacemnt / sqrt(n) ,  # Standard Error
+    ci_taplacemnt = qt(0.975, df = n - 1) * se_taplacemnt  # 95% Confidence Interval
+  )
+print(taplacement_stats)
+
+# Plot the boxplot with error bars
+ta_pt <- ggplot(data = taplacement_stats, aes(x = Placement, y = mean_taplacemnt, fill = Placement)) + 
+  scale_fill_manual(values = c("Concurrent" = "#1f78b4",
+                               "Post-Exposure" = "#33a02c")) +
+  geom_col(width = 0.4) +
+  geom_errorbar(aes(x = Placement, ymin = mean_taplacemnt - ci_taplacemnt, ymax =  mean_taplacemnt + ci_taplacemnt), width = 0.2, color = "black") +
+  labs(x = "(B) Placement") +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_blank(),  # 取消顯示 y 軸名稱
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+ta_fig <- ggarrange(
+  ta_lt, ta_pt,
+  ncol = 2, nrow = 1,
+  align = "h"  # 垂直對齊
+)
+ta_fig + theme(plot.margin = unit(c(0.3, 0.2, 0.1, 0.2), "inches"))
+
+# ggsave(ta_fig, 
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Accuracy/Tolerant/Tolerant Accuracy of Lable Type and Placement.pdf",
+#        device = "pdf" )
+```
+
+## One-Way ANOVA (Strict with Control)
+
+```{r}
+Strict_OneWay_MEM <- lmer(Value ~ Condition + (1|ParticipantId), data = Strict_With_data)
+anova(Strict_OneWay_MEM)
+
+# Post-Hoc
+Strict_OneWay_pairwise <- pairs(emmeans(Strict_OneWay_MEM, ~ Condition))
+print(Strict_OneWay_pairwise)
+
+Strict_OneWay_summary_pairwise <- summary(Strict_OneWay_pairwise)
+# str(summary_pairwise)
+# print(summary_pairwise$p.value)
+
+Strict_OneWay_significant_contrasts <- Strict_OneWay_summary_pairwise$contrast[Strict_OneWay_summary_pairwise$p.value <= 0.05]
+
+Strict_OneWay_significant_df <- Strict_OneWay_summary_pairwise$df[Strict_OneWay_summary_pairwise$p.value <= 0.05]
+
+Strict_OneWay_significant_tratio <- Strict_OneWay_summary_pairwise$t.ratio[Strict_OneWay_summary_pairwise$p.value <= 0.05]
+
+Strict_OneWay_significant_p_values <- Strict_OneWay_summary_pairwise$p.value[Strict_OneWay_summary_pairwise$p.value <= 0.05]
+Strict_OneWay_significant_p_values <- round(Strict_OneWay_significant_p_values, 3)
+
+Strict_OneWay_significant_results <- data.frame(contrast = Strict_OneWay_significant_contrasts, df = Strict_OneWay_significant_df, t.ratio = Strict_OneWay_significant_tratio, p.value = Strict_OneWay_significant_p_values)
+
+print(Strict_OneWay_significant_results)
+```
+
+## One-Way ANOVA (Tolerant with Control)
+
+```{r}
+Tolerant_OneWay_MEM <- lmer(Value ~ Condition + (1|ParticipantId), data = Tolerant_With_data)
+anova(Tolerant_OneWay_MEM)
+
+# Post-Hoc
+Tolerant_OneWay_pairwise <- pairs(emmeans(Tolerant_OneWay_MEM, ~ Condition))
+print(Tolerant_OneWay_pairwise)
+
+Tolerant_OneWay_summary_pairwise <- summary(Tolerant_OneWay_pairwise)
+# str(summary_pairwise)
+# print(summary_pairwise$p.value)
+
+Tolerant_OneWay_significant_contrasts <- Tolerant_OneWay_summary_pairwise$contrast[Tolerant_OneWay_summary_pairwise$p.value <= 0.05]
+
+Tolerant_OneWay_significant_df <- Tolerant_OneWay_summary_pairwise$df[Tolerant_OneWay_summary_pairwise$p.value <= 0.05]
+
+Tolerant_OneWay_significant_tratio <- Tolerant_OneWay_summary_pairwise$t.ratio[Tolerant_OneWay_summary_pairwise$p.value <= 0.05]
+
+Tolerant_OneWay_significant_p_values <- Tolerant_OneWay_summary_pairwise$p.value[Tolerant_OneWay_summary_pairwise$p.value <= 0.05]
+Tolerant_OneWay_significant_p_values <- round(Tolerant_OneWay_significant_p_values, 3)
+
+Tolerant_OneWay_significant_results <- data.frame(contrast = Tolerant_OneWay_significant_contrasts, df = Tolerant_OneWay_significant_df, t.ratio = Tolerant_OneWay_significant_tratio, p.value = Tolerant_OneWay_significant_p_values)
+print(Tolerant_OneWay_significant_results)
+```
+
+# PE組內比較
+
+```{r}
+# Strict 
+PE_Strict <- Exclude_Control_Response[grepl("StrictRate", Exclude_Control_Response$Type) & grepl("Post-Exposure", Exclude_Control_Response$Placement), ]
+
+
+print(PE_Strict)
+
+# Tolerant 
+PE_Tolerant <- Exclude_Control_Response[grepl("TolerantRate", Exclude_Control_Response$Type) & grepl("Post-Exposure", Exclude_Control_Response$Placement), ]
+
+print(PE_Tolerant)
+```
+
+## PE Strict One-Way
+
+```{r}
+PE_Strict_OneWay_MEM <- lmer(Value ~ Type + (1|ParticipantId), data = PE_Strict)
+anova(PE_Strict_OneWay_MEM)
+
+
+# Post-Hoc
+PE_Strict_One_Way_pairwise <- pairs(emmeans(PE_Strict_OneWay_MEM, ~ Type))
+print(PE_Strict_One_Way_pairwise)
+
+PE_Strict_One_Way_summary_pairwise <- summary(PE_Strict_One_Way_pairwise)
+# str(summary_pairwise)
+# print(summary_pairwise$p.value)
+
+PE_Strict_One_Way_significant_contrasts <- PE_Strict_One_Way_summary_pairwise$contrast[PE_Strict_One_Way_summary_pairwise$p.value <= 0.05]
+
+PE_Strict_One_Way_significant_df <- PE_Strict_One_Way_summary_pairwise$df[PE_Strict_One_Way_summary_pairwise$p.value <= 0.05]
+
+PE_Strict_One_Way_significant_tratio <- PE_Strict_One_Way_summary_pairwise$t.ratio[PE_Strict_One_Way_summary_pairwise$p.value <= 0.05]
+
+PE_Strict_One_Way_significant_p_values <- PE_Strict_One_Way_summary_pairwise$p.value[PE_Strict_One_Way_summary_pairwise$p.value <= 0.05]
+PE_Strict_One_Way_significant_p_values <- round(PE_Strict_One_Way_significant_p_values, 3)
+
+PE_Strict_One_Way_significant_results <- data.frame(contrast = PE_Strict_One_Way_significant_contrasts, df = PE_Strict_One_Way_significant_df, t.ratio = PE_Strict_One_Way_significant_tratio, p.value = PE_Strict_One_Way_significant_p_values)
+
+print(PE_Strict_One_Way_significant_results)
+```
+
+```{r}
+unique(PE_Strict$Type)
+PE_Strict <- PE_Strict %>%
+  mutate(
+    Type = case_when(
+      Type == "PECreStrictRate" ~ "1st",
+      Type == "PECre_Post-ExposureStrictRate" ~ "2nd",
+      Type == "PEConStrictRate" ~ "1st",
+      Type == "PECon_Post-ExposureStrictRate" ~ "2nd",
+      Type == "PEMStrictRate" ~ "1st",
+      Type == "PEM_Post-ExposureStrictRate" ~ "2nd",
+      TRUE ~ Type  # Keep the original value for any unmatched cases
+    )
+  )
+
+pe_saall_stats <- PE_Strict %>%
+  group_by(Type, Condition) %>%
+  summarize(
+    pe_mean_sa = round(mean(Value*100), 2),
+    pe_sd_sa = round(sd(Value*100), 2),
+    n = n(),
+    pe_se_sa = pe_sd_sa / sqrt(n) ,  # Standard Error
+    pe_ci_sa = qt(0.975, df = n - 1) * pe_se_sa  # 95% Confidence Interval
+  )
+print(pe_saall_stats)
+
+# 繪製圖形
+sapecom_plot <- ggplot(data = pe_saall_stats, aes(x = Condition, y = pe_mean_sa, fill = Type)) + 
+  scale_fill_brewer(palette="Reds") +
+  geom_bar(stat="identity", position=position_dodge(width = 0.9), width = 0.9) +
+  geom_errorbar(aes(ymin = pe_mean_sa - pe_ci_sa, ymax = pe_mean_sa + pe_ci_sa), width = 0.3, color = "black", position=position_dodge(width = 0.9)) +
+  labs(x = "Condition", y = "Accuracy (%)", fill = "Status") +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  )
+
+sapecom_plot
+
+
+# ggsave(sapecom_plot,
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Accuracy/Strict/Strict Accuracy In Post-Exposure Comparison.pdf",
+#        device = "pdf" )
+
+
+```
+
+
+## PE Tolerant One-Way
+
+```{r}
+PE_Tolerant_OneWay_MEM <- lmer(Value ~ Type + (1|ParticipantId), data = PE_Tolerant)
+anova(PE_Tolerant_OneWay_MEM)
+
+# Post-Hoc
+PE_Tolerant_One_Way_pairwise <- pairs(emmeans(PE_Tolerant_OneWay_MEM, ~ Type))
+print(PE_Tolerant_One_Way_pairwise)
+
+PE_Tolerant_One_Way_summary_pairwise <- summary(PE_Tolerant_One_Way_pairwise)
+# str(summary_pairwise)
+# print(summary_pairwise$p.value)
+
+PE_Tolerant_One_Way_significant_contrasts <- PE_Tolerant_One_Way_summary_pairwise$contrast[PE_Tolerant_One_Way_summary_pairwise$p.value <= 0.05]
+
+PE_Tolerant_One_Way_significant_df <- PE_Tolerant_One_Way_summary_pairwise$df[PE_Tolerant_One_Way_summary_pairwise$p.value <= 0.05]
+
+PE_Tolerant_One_Way_significant_tratio <- PE_Tolerant_One_Way_summary_pairwise$t.ratio[PE_Tolerant_One_Way_summary_pairwise$p.value <= 0.05]
+
+PE_Tolerant_One_Way_significant_p_values <- PE_Tolerant_One_Way_summary_pairwise$p.value[PE_Tolerant_One_Way_summary_pairwise$p.value <= 0.05]
+PE_Tolerant_One_Way_significant_p_values <- round(PE_Tolerant_One_Way_significant_p_values, 3)
+
+PE_Tolerant_One_Way_significant_results <- data.frame(contrast = PE_Tolerant_One_Way_significant_contrasts, df = PE_Tolerant_One_Way_significant_df, t.ratio = PE_Tolerant_One_Way_significant_tratio, p.value = PE_Tolerant_One_Way_significant_p_values)
+
+print(PE_Tolerant_One_Way_significant_results)
+```
+
+
+```{r}
+PE_Tolerant <- PE_Tolerant %>%
+  mutate(
+    Type = case_when(
+      Type == "PECreTolerantRate" ~ "1st",
+      Type == "PECre_Post-ExposureTolerantRate" ~ "2nd",
+      Type == "PEConTolerantRate" ~ "1st",
+      Type == "PECon_Post-ExposureTolerantRate" ~ "2nd",
+      Type == "PEMTolerantRate" ~ "1st",
+      Type == "PEM_Post-ExposureTolerantRate" ~ "2nd",
+      TRUE ~ Type  # Keep the original value for any unmatched cases
+    )
+)
+
+
+pe_taall_stats <- PE_Tolerant %>%
+  group_by(Type, Condition) %>%
+  summarize(
+    pe_mean_ta = round(mean(Value*100), 2),
+    pe_sd_ta = round(sd(Value*100), 2),
+    n = n(),
+    pe_se_ta = pe_sd_ta / sqrt(n) ,  # Standard Error
+    pe_ci_ta = qt(0.975, df = n - 1) * pe_se_ta  # 95% Confidence Interval
+  )
+print(pe_taall_stats)
+
+# 繪製圖形
+tapecom_plot <- ggplot(data = pe_taall_stats, aes(x = Condition, y = pe_mean_ta, fill = Type)) + 
+  scale_fill_brewer(palette="Reds") +
+  geom_bar(stat="identity", position=position_dodge(width = 0.9), width = 0.9) +
+  geom_errorbar(aes(ymin = pe_mean_ta - pe_ci_ta, ymax = pe_mean_ta + pe_ci_ta), width = 0.3, color = "black", position=position_dodge(width = 0.9)) +
+  labs(x = "Condition", y = "Accuracy (%)", fill = "Status") +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  )
+
+tapecom_plot
+
+
+# ggsave(sapecom_plot,
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Accuracy/Tolerant/Tolerant Accuracy In Post-Exposure Comparison.pdf",
+#        device = "pdf" )
+
+
+```
+
+
+

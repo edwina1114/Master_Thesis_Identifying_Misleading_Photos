@@ -1,0 +1,79 @@
+```{r}
+library(readr)
+library(irr)
+
+Cohen <- read_csv("/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative Results/LabStudy/Data/Cohen_Total.csv")
+print(Cohen)
+colnames(Cohen)
+```
+
+```{r}
+
+kappa_results <- list()
+
+for (i in 1:46) {
+  # Extract the relevant columns
+  cols <- Cohen[, (2*i-1):(2*i)]
+  if (i < 6) {
+    kappa_results[[paste("Contextual", i, sep="")]] <- kappa2(cols, "unweighted")
+  }
+  else if (i < 11) {
+    kappa_results[[paste("Credibility", i - 5, sep="")]] <- kappa2(cols, "unweighted")
+  }
+  else if (i < 16) {
+    kappa_results[[paste("Mixed", i - 10, sep="")]] <- kappa2(cols, "unweighted")
+  }
+  else if (i < 26) {
+    kappa_results[[paste("Concurrent", i - 15, sep="")]] <- kappa2(cols, "unweighted")
+  }
+  else if (i < 34) {
+    kappa_results[[paste("Post-Exposure", i - 25, sep="")]] <- kappa2(cols, "unweighted")
+  }
+  else if (i < 42) {
+    kappa_results[[paste("Self-Efficacy", i - 33, sep="")]] <- kappa2(cols, "unweighted")
+  }
+  else {
+    kappa_results[[paste("Labels", i - 41, sep="")]] <- kappa2(cols, "unweighted")
+  }
+}
+
+
+# print(kappa_results)
+```
+
+
+```{r}
+names <- c()
+kappa_values <- c()
+
+for (name in names(kappa_results)) {
+  names <- c(names, name)
+  kappa_values <- c(kappa_values, kappa_results[[name]]$value)
+}
+
+kappa_df <- data.frame(Name = names, Kappa = kappa_values)
+
+print(kappa_df)
+
+mean_kappa <- mean(kappa_df$Kappa)
+cat("整體的Kappa Value: ", mean_kappa, "\n")
+
+```
+
+## Kappa > 0.8: Almost Perfect
+```{r}
+kappa_perfect <- kappa_df[kappa_df$Kappa > 0.8, ]
+print(kappa_perfect)
+```
+
+## Kappa > 0.6: Substantial
+```{r}
+kappa_subtantial <- kappa_df[kappa_df$Kappa <= 0.8 & kappa_df$Kappa > 0.6, ]
+print(kappa_subtantial)
+```
+
+## Kappa > 0.4: Moderate
+```{r}
+kappa_moderate <- kappa_df[kappa_df$Kappa <= 0.6 & kappa_df$Kappa > 0.4, ]
+print(kappa_moderate)
+```

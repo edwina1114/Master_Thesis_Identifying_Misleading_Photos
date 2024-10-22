@@ -1,0 +1,113 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gplots)
+library(ltm)
+library(lmerTest)
+library(emmeans)
+```
+
+```{r}
+SE <- read_csv("../Data/MeasurementsFiltered/SE.csv")
+print(SE) 
+```
+
+# CronBach's Alpha
+-alpha: 0.985 -> High consistency
+
+```{r}
+cronbach.alpha(SE[,5:14], CI=TRUE)
+```
+
+
+## Scoring : Add Total Mean Row
+
+```{r}
+SE$Means <- rowMeans(SE[, 5:14], na.rm = TRUE)
+print(SE)
+```
+
+## Summary, Standard Derivation
+
+```{r}
+summary(SE) #看各列的資料(Min, 1st Qu, Median, Mean, 3rd Qu, Max)
+
+# Compute the sd (or var) of multiple variables at the same time
+cat("\n")
+cat("Standard Derivation: \n")
+lapply(SE[, 5:15], sd)
+```
+
+## Plotmeans
+
+```{r}
+SE <- SE %>%
+  mutate(SE_Condition = factor(SE$SE_Condition, c("Control", "CCTCon", "CCTCre", "CCTM", "PECon", "PECre", "PEM")))
+
+se_stats <- SE %>%
+  group_by(SE_Condition, SE_Placement) %>%
+  summarize(
+    mean_se = mean(Means),
+    sd_se = sd(Means),
+    n = n(),  # Sample size for each group
+    se_se = sd_se / sqrt(n),  # Standard Error
+    ci_se = qt(0.975, df = n - 1) * se_se  # 95% Confidence Interval
+  )
+print(se_stats)
+
+# Define custom colors for each combination of Placement and LabelType
+custom_colors <- c(
+  "Control" = "#fa75a2",
+  "CCTCon" = "#a6cee3",  # light blue
+  "CCTCre" = "#1f78b4",  # medium blue
+  "CCTM" = "#2e4194",  # dark blue
+  "PECon" = "#b2df8a",  # light green
+  "PECre" = "#33a02c",  # medium green
+  "PEM" = "#006400"  # dark green
+)
+
+# Plot the boxplot with error bars
+seall <- ggplot(data = se_stats, aes(x = SE_Condition, y = mean_se, fill = SE_Condition)) + 
+  scale_fill_manual(values = custom_colors) + 
+  geom_col(width = 0.6) +
+  geom_errorbar(aes(x = SE_Condition, ymin = mean_se - ci_se, ymax = mean_se + ci_se), width = 0.3, color = "black") +
+  labs(x = "Condition", y = "Self-Efficacy Score", fill = "Placement") +
+  ylim(0,100) +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+seall
+
+# ggsave(seall, 
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Self-Efficacy/Self-Efficacy of All Conditions.pdf",
+#        device = "pdf" )
+```
+
+
+## One-Way ANOVA (With Control) : 無顯著差異
+
+```{r}
+SE_OneWay_MEM <- lmer(Means ~ SE_Condition + (1|SEParticipantId), data = SE)
+anova(SE_OneWay_MEM)
+```
+
+
+

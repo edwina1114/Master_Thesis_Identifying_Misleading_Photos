@@ -1,0 +1,18 @@
+```{r}
+# Step 1: Extract the common elements
+common_elements <- intersect(df_fake$element, df_true$element)
+
+# Step 2: Filter the data frames to include only the common elements
+df_fake_common <- df_fake[df_fake$element %in% common_elements, ]
+df_true_common <- df_true[df_true$element %in% common_elements, ]
+
+# Step 3: Merge the data frames on the common elements
+merged_df <- merge(df_fake_common, df_true_common, by = "element")
+
+# Step 4: Calculate the average Kappa value for each common element
+merged_df$Average_Kappa <- rowMeans(merged_df[, c("kappa_value.x", "kappa_value.y")])
+
+print(merged_df)
+```
+
+

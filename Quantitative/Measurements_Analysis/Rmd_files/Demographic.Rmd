@@ -1,0 +1,83 @@
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gplots)
+library(ltm)
+library(lmerTest)
+library(emmeans)
+```
+
+```{r}
+Demorgraphic <- read_csv("../Data/MeasurementsFiltered/Demographic.csv")
+print(Demorgraphic)
+```
+
+## Summary
+```{r}
+summary(Demorgraphic)
+```
+
+## Age
+```{r}
+cat("Standard Derivation of Age: ",sd(Demorgraphic$Age))
+```
+
+## Gender
+```{r}
+total_count <- length(Demorgraphic$Gender)
+
+count_F <- sum(Demorgraphic$Gender == "F")
+count_M <- sum(Demorgraphic$Gender == "M")
+
+percentage_F <- (count_F / total_count) * 100
+percentage_M <- (count_M / total_count) * 100
+
+cat("Count of F:", count_F, "\n")
+cat("Count of M:", count_M, "\n")
+cat("Percentage of F:", percentage_F, "%\n")
+cat("Percentage of M:", percentage_M, "%\n")
+```
+
+
+## Web-Use Skills
+```{r}
+Q1 <- Demorgraphic[, 4:9]
+# cronbach.alpha(Demorgraphic[, 4:9], CI=TRUE)
+
+Q1$Mean <- rowMeans(Q1, na.rm = TRUE)
+Q1$Mean <- round(Q1$Mean, 2)
+print(Q1)
+
+# Calculate and print the mean
+cat("Mean:", mean(Q1$Mean, na.rm = TRUE), "\n")
+# Calculate and print the standard deviation
+cat("Standard Deviation:", sd(Q1$Mean, na.rm = TRUE), "\n")
+
+cat("Summary: ", "\n")
+summary(Q1$Mean)
+
+```
+
+## Digital Imaging Skills
+```{r}
+DIS <-Demorgraphic[, 10:11]
+cronbach.alpha(DIS, CI=TRUE)
+
+DIS$Mean <- rowMeans(DIS, na.rm = TRUE)
+print(round(DIS, 2))
+
+summary(DIS)
+
+cat("Standard Derivation: ", "\n")
+print(round(sapply(DIS, sd), 2))
+```
+
+
+## Q4 ~ Q5
+```{r}
+cat("Standard Derivation of Q4: ",sd(Demorgraphic$Q4), "\n")
+cat("Standard Derivation of Q5: ",sd(Demorgraphic$Q5), "\n")
+```

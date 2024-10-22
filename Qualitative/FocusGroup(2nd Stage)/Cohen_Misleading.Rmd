@@ -1,0 +1,100 @@
+```{r}
+library(irr)
+# read csv file
+fake <- read.csv("MisleadingPhoto.csv", stringsAsFactors = F)
+ncol(fake) # 看總共有幾行
+```
+ 
+```{r}
+fbright <- kappa2(fake[2:119, 1:2]) #bright
+
+flight <- kappa2(fake[2:119, 3:4]) #light
+
+fshadow <- kappa2(fake[2:119, 5:6]) #shadow
+
+fls <- kappa2(fake[2:119, 7:8]) #light and shadow
+
+fcontrast <- kappa2(fake[2:119, 9:10]) #contrast
+
+fcolor <- kappa2(fake[2:119, 11:12]) #color
+
+fcolour <- kappa2(fake[2:119, 13:14]) #colour
+
+fhue <- kappa2(fake[2:119, 15:16]) #hue
+
+fct <- kappa2(fake[2:119, 17:18]) #color temp
+
+fvibrant <- kappa2(fake[2:119, 19:20]) #vibrant
+
+fsaturation <- kappa2(fake[2:119, 21:22]) #td
+
+fsharpness <- kappa2(fake[2:119, 23:24]) #saturation
+
+fgrainy <- kappa2(fake[2:119, 25:26]) #sharpness
+
+fblur <- kappa2(fake[2:119, 27:28]) #grainy
+
+ffocus <- kappa2(fake[2:119, 29:30]) #blur
+
+fcomposition <- kappa2(fake[2:119, 31:32]) #focus
+
+fangle <- kappa2(fake[2:119, 33:34]) #composition
+
+fplating <- kappa2(fake[2:119, 35:36]) #angle
+
+fportion <- kappa2(fake[2:119, 37:38]) #plating
+
+fartificital <- kappa2(fake[2:119, 39:40]) #portion
+
+fcompare <- kappa2(fake[2:119, 41:42]) #artificial
+
+```
+
+```{r}
+df_fake <- data.frame(element = c("bright 亮度", "light 光線", "shadow 陰影", 
+                                  "light and shadow 光影", "contrast 對比度", 
+                                  "color 顏色", "colour 色彩", "hue 色調", 
+                                  "color temperature 色溫", "vibrant 鮮豔度", 
+                                  "saturation 飽和度", "sharpness 銳利度",
+                                  "grainy 顆粒感", "blur 霧化", "focus 聚焦",
+                                  "composition 構圖", "angle 角度", 
+                                  "plating 擺盤", "portion 份量", 
+                                  "artificial 不自然", "compare 比較實際情況"
+                                  ),
+                      
+                 kappa_value = c(fbright$value, flight$value,
+                                 fshadow$value, fls$value, fcontrast$value,
+                                 fcolor$value, fcolour$value, fhue$value,
+                                 fct$value, fvibrant$value, 
+                                 fsaturation$value, fsharpness$value,
+                                 fgrainy$value, fblur$value, ffocus$value,
+                                 fcomposition$value, fangle$value,
+                                 fplating$value, fportion$value,
+                                 fartificital$value, fcompare$value
+                                 ),
+                 
+                  chinese = c("亮度", "光線", "陰影", "光影", "對比度", 
+                              "顏色", "色彩", "色調", "色溫", "鮮豔度", 
+                              "飽和度", "銳利度", "顆粒感", "霧化", 
+                              "聚焦", "構圖", "角度", "擺盤", "份量", "不自然",
+                              "比較實際情況"
+                             )
+                 )
+df_fake$kappa_value <- round(df_fake$kappa_value, 2)
+
+df_fake
+cat("整體的kappa value: ", mean(df_fake$kappa_value), "\n")
+```
+
+
+
+```{r}
+print(df_fake[df_fake$kappa_value > 0.8, ])
+
+print(df_fake[df_fake$kappa_value <= 0.8 & df_fake$kappa_value > 0.6, ])
+
+print(df_fake[df_fake$kappa_value <= 0.6 & df_fake$kappa_value > 0.4, ])
+
+print(df_fake[df_fake$kappa_value <= 0.4 & df_fake$kappa_value > 0.2, ])
+```
+

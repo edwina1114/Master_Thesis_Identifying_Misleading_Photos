@@ -1,0 +1,15 @@
+﻿NASA_Condition,LabelType,Placement,MentalDemand,TemporalDemand,PhysicalDemand,Performance,Effort,FrustrationLevel
+CCTIm,Implicit,Concurrent,1,4,0,3,3,3
+CCTM,Mix,Concurrent,3,3,0,7,0,0
+PEEx,Explicit,Post-Exposure,9,10,0,10,0,0
+PEIm,Implicit,Post-Exposure,13,12,0,9,0,0
+PEM,Mix,Post-Exposure,14,12,0,8,0,0
+Control,Control,Control,5,5,0,0,0,0
+CCTEx,Explicit,Concurrent,12,2,0,3,0,0
+CCTM,Mix,Concurrent,12,5,3,13,7,7
+PEEx,Explicit,Post-Exposure,11,3,3,15,5,5
+PEIm,Implicit,Post-Exposure,14,5,3,12,11,13
+PEM,Mix,Post-Exposure,9,3,3,8,8,8
+Control,Control,Control,8,3,3,8,8,8
+CCTEx,Explicit,Concurrent,8,3,3,6,6,6
+CCTIm,Implicit,Concurrent,12,3,3,12,12,9

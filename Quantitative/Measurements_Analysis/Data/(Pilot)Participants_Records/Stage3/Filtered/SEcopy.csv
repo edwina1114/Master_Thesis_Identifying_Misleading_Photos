@@ -1,0 +1,8 @@
+﻿SEParticipantId,SE_Condition,SE_Placement,SE_LabelType,Ave
+6,CCTEx,Concurrent,Explicit,99
+6,CCTIm,Concurrent,Implicit,100
+6,CCTM,Concurrent,Mix,94
+6,Control,Control,Control,97
+6,PEEx,PostExposure,Explicit,99
+6,PEM,PostExposure,Mix,94
+6,PEIm,PostExposure,Implicit,99

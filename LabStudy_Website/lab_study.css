@@ -1,0 +1,264 @@
+body {
+    /* Background image */
+    /*background-image: url("https://play-lh.googleusercontent.com/tq5VECUP3Kpz8CdjboFkruFQwE7EW4vM_pOTYsADx1xOzfs-QaT-ZsCeyrML3XAXNw=w7680-h4320-rw"); 
+      */
+    /* cover 的特性是讓背景圖整個「不變形」、「寬高等比例」、「在必要時局部裁切」
+      的鋪滿整個容器空間 */
+    background-size: cover;
+}
+
+h3 {
+    text-align: center;
+    margin: 15px;
+}
+
+h4 {
+    margin-top: 150px;
+}
+
+form {
+    text-align: center;
+    margin: 0 auto;
+    width: fit-content;
+}
+
+fieldset {
+    margin-top: 20px;
+}
+
+figcaption {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+input[type="range"] {
+    width: 50%;
+}
+
+/* Id */
+#CP_h3 {
+    margin-top: 300px;
+    margin-bottom: 50px;
+}
+
+#showImageIDTag {
+    padding: 20px;
+
+}
+
+#showImageID {
+    display: block;
+    margin: 0 auto;
+    /* 置中 */
+    margin-top: 100px;
+    width: 450px;
+    height: 500px;
+}
+
+#SDQAForm {
+    width: 55%;
+}
+
+
+#showImageIDTag {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#flexCheckDefault {
+    margin-left: 0 auto;
+    margin-right: 20px;
+}
+
+#btn-home {
+    margin-left: 20px;
+    align-items: center;
+    display: none;
+}
+
+#slidervalue {
+    margin: 50px;
+}
+
+#countdown {
+    text-align: center;
+}
+
+#CountdownPage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#PracticeIntroPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Class */
+.page {
+    display: none;
+    /* Hide all pages by default */
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
+}
+
+.homecontent {
+    margin-top: 50px;
+    width: fit-content;
+    padding-left: 10%;
+    line-height: 2.5;
+}
+
+.headerintro {
+    margin-top: 250px;
+    line-height: 2;
+}
+
+
+.introcontent {
+    padding-top: 1.5em;
+    line-height: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.QAintro {
+    margin-top: 40px;
+    line-height: 2;
+}
+
+.btn-submit {
+    margin: 50px;
+}
+
+.invalid-feedback {
+    color: red;
+    font-size: 80%;
+    display: none;
+}
+
+.checkbox-and-button {
+    display: flex;
+    align-items: center;
+}
+
+.point-scale {
+    text-align: center;
+    margin: 40px;
+}
+
+.scaleCaption {
+    margin-right: 25px;
+}
+
+.slidecontainer {
+    text-align: center;
+}
+
+
+
+.slider {
+    -webkit-appearance: none;
+    text-align: center;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background: #3911b2;
+    cursor: pointer;
+}
+
+
+.SDRImage {
+    display: block;
+    margin: 0 auto;
+    /* 置中 */
+    width: 300px;
+    height: 350px;
+    margin-bottom: 1em;
+}
+
+.SEquestion-container,
+.question-container {
+    border: 4px solid rgb(149, 104, 136);
+    /* 边框的样式 */
+    border-radius: 5px;
+    padding: 15px;
+    /* 可选，添加内边距以增加边框与内容之间的间距 */
+    margin-bottom: 20px;
+    /* 可选，添加外边距以增加问题之间的间距 */
+}
+
+/* Optional: Style the container */
+.ParallelContainer {
+    display: flex;
+    align-items: center;
+}
+
+.RankingSelect {
+    margin-top: 1em;
+}
+
+.ItemContainer {
+    margin-right: 2em;
+}
+
+.form-select {
+    width: fit-content;
+    margin: 10px;
+}
+
+.PE {
+    border: 3px solid rgb(0, 0, 0);
+    /* 边框的样式 */
+    border-radius: 5px;
+    padding: 10px;
+    /* 可选，添加内边距以增加边框与内容之间的间距 */
+    margin-bottom: 20px;
+    /* 可选，添加外边距以增加问题之间的间距 */
+}
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#btn-nextTest:disabled {
+    background-color: lightgray;
+    color: gray;
+}
+
+#btn-nextTest:not(:disabled) {
+    background-color: dodgerblue;
+    color: white;
+}
+
+.form-check-input {
+    border: 3px solid rgb(42, 20, 90);
+}

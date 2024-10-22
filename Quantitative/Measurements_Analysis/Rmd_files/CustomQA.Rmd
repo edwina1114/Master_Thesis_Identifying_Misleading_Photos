@@ -1,0 +1,150 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+library(tidyr)
+library(gplots)
+library(lmerTest)
+library(emmeans)
+```
+
+
+```{r}
+SDQ <- read_csv("../Data/MeasurementsFiltered/SDQ.csv")
+print(SDQ)
+summary(SDQ)
+lapply(SDQ[, seq(2, ncol(SDQ), by = 2)], sd)
+
+# Excluding Q1Type through Q5Type using dplyr
+SDQ <- subset(SDQ, select = -c(Q1Type, Q2Type, Q3Type, Q4Type, Q5Type))
+
+SDQ_long <- gather(SDQ, QuestionId, Value, -SDQParticipantId)
+
+get_SDQType <- function(QuestionId) {
+  switch(QuestionId,
+         "Q1" = "Contextual",
+         "Q2" = "Credibility",
+         "Q3" = "Mix",
+         "Q4" = "Concurrent",
+         "Q5" = "PostExposure",
+         "Unknown")
+}
+SDQ_long$Type <- sapply(SDQ_long$QuestionId, get_SDQType)
+print(SDQ_long)
+         
+SDQ_LabelType <- SDQ_long %>%
+  filter(str_detect(QuestionId, "Q1|Q2|Q3"))
+print(SDQ_LabelType)
+
+SDQ_Placement <- SDQ_long %>%
+  filter(str_detect(QuestionId, "Q4|Q5"))
+print(SDQ_Placement)
+```
+
+
+## PlotMeans
+
+```{r}
+sdqlabel_stats <- SDQ_LabelType %>%
+  group_by(Type) %>%
+  summarize(
+    mean_sdqlabel = mean(Value),
+    sd_sdqlabel = sd(Value),
+    n = n(),  # Sample size for each group
+    se_sdqlabel = sd_sdqlabel / sqrt(n),  # Standard Error
+    ci_sdqlabel = qt(0.975, df = n - 1) * se_sdqlabel  # 95% Confidence Interval
+  )
+print(sdqlabel_stats)
+
+# Plot the boxplot with error bars
+sdq_lt <- ggplot(data = sdqlabel_stats, aes(x = Type, y = mean_sdqlabel, fill = Type)) + 
+  scale_fill_brewer(palette="Greys") +
+  geom_col(width = 0.6) +
+  geom_errorbar(aes(x = Type, ymin = mean_sdqlabel - ci_sdqlabel, ymax =  mean_sdqlabel + ci_sdqlabel), width = 0.2, color = "black") +
+  labs(x = "(A) Label Type", y = "Rating") +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+sdq_lt
+
+sdqplacement_stats <- SDQ_Placement %>%
+  group_by(Type) %>%
+  summarize(
+    mean_sdqplacement = round(mean(Value), 2),
+    sd_sdqplacement = round(sd(Value), 2),
+    n = n(),  # Sample size for each group
+    se_sdqplacement = sd_sdqplacement / sqrt(n),  # Standard Error
+    ci_sdqplacement = qt(0.975, df = n - 1) * se_sdqplacement  # 95% Confidence Interval
+  )
+print(sdqplacement_stats)
+
+# Plot the boxplot with error bars
+sdq_pt <- ggplot(data = sdqplacement_stats, aes(x = Type, y = mean_sdqplacement, fill = Type)) +
+  scale_fill_manual(values = c("Concurrent" = "#1f78b4",
+                               "PostExposure" = "#33a02c")) + 
+  geom_col(width = 0.4) +
+  geom_errorbar(aes(x = Type, ymin = mean_sdqplacement - ci_sdqplacement, ymax = mean_sdqplacement + ci_sdqplacement), width = 0.2, color = "black") +
+  labs(x = "(B) Placement") +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_blank(),  # 取消顯示 y 軸名稱
+    axis.text = element_text(size = 11),
+    axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+sdq_pt
+
+sdq_fig <- ggarrange(
+  sdq_lt, sdq_pt,
+  ncol = 2, nrow = 1,
+  align = "h"  # 垂直對齊
+)
+sdq_fig + theme(plot.margin = unit(c(0.3, 0.2, 0.1, 0.2), "inches"))
+
+# ggsave(sdq_fig,
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/Effectiveness Perception/Effectiveness Perception of Lable Type and Placement.pdf",
+#        device = "pdf" )
+
+```
+
+### One-Way ANOVA (LabelType)
+
+```{r}
+LabelType_OneWay_MEM <- lmer(Value ~ Type + (1|SDQParticipantId), data = SDQ_LabelType)
+anova(LabelType_OneWay_MEM)
+
+pairs(emmeans(LabelType_OneWay_MEM, ~ Type))
+```
+
+### One-Way ANOVA (Placement)
+
+```{r}
+Placement_OneWay_MEM <- lmer(Value ~ Type + (1|SDQParticipantId), data = SDQ_Placement)
+
+anova(Placement_OneWay_MEM)
+
+pairs(emmeans(Placement_OneWay_MEM, ~ Type))
+```

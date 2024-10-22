@@ -1,0 +1,116 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gplots)
+library(lmerTest)
+library(emmeans)
+```
+
+
+```{r}
+NASA <- read_csv("../Data/MeasurementsFiltered/NASA.csv")
+print(NASA)
+```
+
+## Scroing : NASA Scale Calculating: x*5
+
+```{r}
+NASA$RawWorkloadScore <- rowMeans(NASA[, 5:10], na.rm = TRUE)
+NASA$RawWorkloadScore <- round(NASA$RawWorkloadScore, 2)
+
+# # Check if multiplication has already been performed
+# if (!all(NASA[, 5:10] %% 5 == 0)) {
+#     NASA[, 5:10] <- NASA[, 5:10] * 5
+# }
+
+# Calculate workload score
+NASA$WorkloadScore <- NASA$RawWorkloadScore*5
+NASA$WorkloadScore <- round(NASA$WorkloadScore, 2)
+print(NASA)
+```
+
+## Summary, Standard Derivation
+
+```{r}
+summary(NASA) #看各列的資料(Min, 1st Qu, Median, Mean, 3rd Qu, Max)
+
+# Compute the sd (or var) of multiple variables at the same time
+cat("\n")
+cat("Standard Derivation: \n")
+lapply(NASA[, 5:12], sd)
+```
+
+## PlotMeans
+
+```{r}
+NASA <- NASA %>%
+  mutate(NASA_Condition = factor(NASA$NASA_Condition, c("Control", "CCTCon", "CCTCre", "CCTM", "PECon", "PECre", "PEM")))
+
+nasa_stats <- NASA %>%
+  group_by(NASA_Condition, NASA_Placement) %>%
+  summarize(
+    mean_nasa = mean(WorkloadScore),
+    sd_nasa = sd(WorkloadScore),
+    n = n(),  # Sample size for each group
+    se_nasa = sd_nasa / sqrt(n),  # Standard Error
+    ci_nasa = qt(0.975, df = n - 1) * se_nasa  # 95% Confidence Interval
+  )
+print(nasa_stats)
+
+# Define custom colors for each combination of Placement and LabelType
+custom_colors <- c(
+  "Control" = "#fa75a2",
+  "CCTCon" = "#a6cee3",  # light blue
+  "CCTCre" = "#1f78b4",  # medium blue
+  "CCTM" = "#2e4194",  # dark blue
+  "PECon" = "#b2df8a",  # light green
+  "PECre" = "#33a02c",  # medium green
+  "PEM" = "#006400"  # dark green
+)
+
+# Plot the boxplot with error bars
+nasaall <- ggplot(data = nasa_stats, aes(x = NASA_Condition, y = mean_nasa, fill = NASA_Condition)) + 
+  scale_fill_manual(values = custom_colors) + 
+  geom_col(width = 0.6) +
+  geom_errorbar(data = nasa_stats, 
+                aes(x = NASA_Condition, ymin = mean_nasa - ci_nasa, ymax = mean_nasa + ci_nasa), width = 0.3, color = "black") +
+  labs(x = "Condition", y = "Workload Score") +
+  ylim(0,100) +
+  theme_minimal() +
+  theme(
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "inches"),
+    axis.title.x = element_text(face = "bold", size = 13, margin = margin(t = 15)),
+    axis.title.y = element_text(face = "bold", size = 13, margin = margin(r = 15)),
+    axis.text = element_text(size = 11),
+    panel.grid = element_blank(),  # 取消所有格線
+    axis.line = element_line(color = "black", size = 0.5),  # 顯示 y 軸和 x 軸線
+    axis.ticks = element_line(color = "black", size = 0.5),  # 顯示刻度線
+    axis.ticks.length = unit(0.2, "cm")  # 設定刻度線的長度
+  ) +
+  guides(fill = FALSE)  # Remove the legend for the fill
+
+nasaall
+
+# ggsave(nasaall, 
+#       filename = "/Users/edwina/Desktop/ResearchOfEdwina/Codes/Quantitative/RPlots/NASA-TLX/NASA-TLX of All Conditions.pdf",
+#        device = "pdf" )
+```
+
+
+## One-Way ANOVA (With Control) : 無顯著差異
+
+```{r}
+NASA_OneWay_MEM <- lmer(WorkloadScore ~ NASA_Condition + (1|NASAParticipantId), data = NASA)
+anova(NASA_OneWay_MEM)
+
+# Post-hoc 
+summary(emmeans(NASA_OneWay_MEM, list(pairwise ~ NASA_Condition), adjust = "tukey"))
+```

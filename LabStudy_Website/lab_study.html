@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <!--- For proper responsive behavior in mobile devices. --->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Lab Study </title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="lab_study.css"> <!-- Connect CSS -->
+</head>
+
+<body>
+
+    <div class="pages">
+        <div class="wrapper">
+
+            <!-- Home Page -->
+            <div id="HomePage" class="page">
+                <h3 style="margin-top: 100px;"> 實驗介紹 </h3>
+
+                <div class='homecontent'>
+                    <p class="fs-5"> <!-- <br> : newline -->
+                        <b>
+                            <font color="#F85D4F"> 請在測試開始前仔細閱讀以下信息。 </font>
+                        </b> <br>
+                        <b> 我們為什麼要進行這項研究: </b> 我們想要了解透過標籤來強調視覺特徵是否能讓使用者可以更快、更準確分辨出具有誤導性的照片。 <br>
+                        <b> 您需要做什麼: </b> 您將根據自身想法回答照片是否具有誤導性，並需回答三份問卷。 <br>
+                        <b> 隱私和數據收集: </b> 過程中收集的所有數據都將被安全的保存。 <br>
+                        <b> 實驗總時長: </b> 大約 30 分鐘。 <br>
+                        <b> 聯繫資訊: </b> 如果您對這項研究有疑問，請聯絡 國立中正大學資訊工程學系 認知與使用者科技實驗室的
+                        林書婷，電子郵件: 611410139@alum.ccu.edu.tw <br>
+                    </p>
+                </div>
+
+                <div class="text-center" style="margin-bottom: 20px;">
+                    <button id="btn-Home" class="btn btn-outline-primary btn-lg"> 開始實驗 </b>
+                </div>
+            </div>
+
+            <!-- Practice Intro Page -->
+            <div id="PracticeIntroPage" class="page">
+                <p class="fw-bold fs-3 text-center" style="margin-top: 100px;"> 規則說明 </p>
+                <div class="introcontent fs-5">
+                    <ol>
+                        <li>
+                            題目中出現的標籤， 皆為利用 <font color="#F85D4F"> 大數據分析 </font>所產生出來的結果 ，
+                            <font color="#F85D4F"> 請您依照自己的想法 </font>，選擇每張照片具誤導性的程度即可。
+                        </li>
+                        <li>
+                            此階段請全程使用 <font color="#F85D4F"> 「數字鍵盤 + 空白鍵」 </font> 進行操作。
+                        </li>
+                        <li>
+                            每一題皆有 <font color="#F85D4F"> 5個選項 </font>，請依照對應選項的數字按下
+                            <font color="#F85D4F"> 右邊數字鍵盤的1~5即可 </font>。
+                        </li>
+                        <li>
+                            當完成作答時，按下 <font color="#F85D4F"> 「空白鍵」 </font> 即可提交答案，進入下一題。
+                        </li>
+                        <li>
+                            每一題皆有 <font color="#F85D4F"> 5秒 </font> 的倒計時，5秒後即可提交答案。
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="fs-4 text-center" style="margin-top: 10px;"> 閱讀完以上規則後，請按下 <font color="#F85D4F">「空白鍵」
+                    </font> 即可進入練習。
+                </div>
+                </p>
+            </div>
+
+            <!-- 進入練習題 -->
+            <div id="ConditionIntroPage" class="page">
+                <h3 id="CP_h3"> </h3>
+                <p id="CP_content" class="fs-5 text-center"> </p>
+                <p class="fs-5 text-center"> 請按下 <font color="#F85D4F">「空白鍵」 </font> 進入練習。 </p>
+            </div>
+
+            <!-- Formal Intro Page -->
+            <div id="FormalIntroPage" class="page">
+                <h3 id="CP_h3"> 練習結束。 </h3>
+                <div class="fs-5 text-center"> 請告知主持人，謝謝！ <br>
+                    請按下 <font color="#F85D4F">「空白鍵」 </font> 進入第一個實驗情境。 </div>
+            </div>
+
+            <!-- NASA-TLX Intro Page -->
+            <div id="NASAIntroPage" class="page">
+                <p class="headerintro fs-5 text-center">
+                    接下來共有 <font color="#F85D4F"> 六題的 NASA-TLX 量表 </font> <br>
+                    此問卷使用 <font color="#F85D4F">「滑鼠」</font> 進行回答。 <br>
+                    請使用 <font color="#F85D4F">「滑鼠」</font> 按下「確認」進入量表回答。
+                </p>
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-NasaIntro" class="btn btn-primary text-center"> 確認 </b>
+                </div>
+            </div>
+
+            <!-- Self-efficacy Intro Page -->
+            <div id="SEIntroPage" class="page">
+                <p class="headerintro fs-5 text-center">
+                    NASA-TLX問卷作答完畢。 <br>
+                    接下來請回答 <font color="#F85D4F"> Self-Efficacy 量表 </font> <br>
+                    此問卷使用 <font color="#F85D4F">「滑鼠」</font> 進行回答。 <br>
+                    請使用 <font color="#F85D4F">「滑鼠」</font> 按下「確認」進入量表回答。
+                </p>
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-SEIntro" class="btn btn-primary text-center"> 確認 </b>
+                </div>
+            </div>
+
+            <!-- Into Condition Page -->
+            <div id="IntoConditionPage" class="page">
+                <p class="headerintro fs-5 text-center">
+                    量表回答結束。 <br>
+                    請按下 <font color="#F85D4F">「空白鍵」</font> 進入下一個實驗情境。
+                </p>
+            </div>
+
+            <!-- Into Self Design QA Page -->
+            <div id="IntoSelfDesignQAPage" class="page">
+                <p class="headerintro fs-5 text-center">
+                    全部實驗情境回答完畢。 <br>
+                    接下來是最後一份問卷，全程使用 <font color="#F85D4F">「滑鼠」</font> 進行回答。 <br>
+                    請使用 <font color="#F85D4F">「滑鼠」</font> 按下「確認」進入量表回答。
+                </p>
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-IntoSDQA" class="btn btn-primary text-center"> 確認 </b>
+                </div>
+            </div>
+
+            <!-- Break Page -->
+            <div id="BreakPage" class="page">
+                <div id="CountdownPage">
+                    <div id="BreakPageTimer" class="timer fw-bold fs-5 text-center" style="color: rgb(40, 20, 220);">
+                    </div>
+                    <p class=" fs-5 text-center" style="margin-top: 50px;line-height: 2;">
+                        現在是 <font color="#F85D4F"> 五分鐘 </font> 的休息時間。 <br>
+                        若您提早休息完畢，即可按下 <font color="#F85D4F">「空白鍵」 </font> 繼續作答。
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Formal Page -->
+            <div id="FormalPage" class="page">
+                <div id="countdown" class="timer fw-bold text-center"> </div>
+
+                <!--- 加入照片 --->
+                <figure class="practice-fig">
+                    <img id="showImageID" src="./assets/test_1.jpg" class="figure-img" alt="1.jpg" ;>
+                    <figcaption id="showImageIDTag" class="fig-caption fs-5"> # tag1 # tag2 # tag3 # tag4 # tag5
+                    </figcaption>
+                </figure>
+
+                <!--- 5-point-Likert-Scale --->
+                <!-- name: z一个指定输入控件名称的字符串。当表单数据被提交时，这个名字会和控件的值一起提交。 
+                        name值必須一樣才可以變成單選題。-->
+
+                <div class="point-scale">
+                    <span class="scaleCaption"> 具誤導性 </span>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
+                            value="1">
+                        <label class="form-check-label" for="inlineRadio1"> 1 </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
+                            value="2">
+                        <label class="form-check-label" for="inlineRadio2"> 2 </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3"
+                            value="3">
+                        <label class="form-check-label" for="inlineRadio3"> 3 </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4"
+                            value="4">
+                        <label class="form-check-label" for="inlineRadio4"> 4 </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio5"
+                            value="5">
+                        <label class="form-check-label" for="inlineRadio5"> 5 </label>
+                    </div>
+                    <span class="scaleCaption"> 不具誤導性 </span>
+                </div>
+
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-nextTest" class="btn btn-primary text-center"> 提交 </b>
+                </div>
+            </div>
+
+            <!-- NASA-TLX Page -->
+            <div id="NASATLXPage" class="page">
+                <p class="QAintro fs-5 text-center">
+                    <b> 請依照自己的感受，使用 <font color="#F85D4F"> 「滑鼠」 </font> 移動下方拉桿並選擇你認為最適當的數值，</b> <br>
+                </p>
+
+                <form>
+                    <fieldset>
+                        <legend id="NASAQuestion1" class="fs-5"> <b> 1. 心智需求 Mental Demand </b> </legend>
+                        <p class="fs-6 text-center" style="margin: 15px;"> 本次的實驗中，需運用多少心智及知覺的活動（例如：思考、
+                            決定、記憶、觀察、搜索，等等）？ </p>
+                        <div class="slidecontainer text-center">
+                            <span class="fs-6"> 非常低 0 </span>
+                            <input type="range" min="0" max="20" value="10" class="slider" id="NASAslider1">
+                            <span class="fs-6"> 20 非常高 </span>
+                            <p class="fs-6"> 您選擇的值: <span id="NASAvalue1" class="fs-5"> </span> </p>
+                        </div>
+                        <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend id="NASAQuestion2" class="fs-5"> <b> 2. 時間需求 Temporal Demand </b> </legend>
+                        <p class="fs-6 text-center" style="margin: 15px;"> 本次的實驗中，進行的步調讓您感覺到多少時間壓力？本實驗的步調是緩慢還是急速？
+                        </p>
+                        <div class="slidecontainer text-center">
+                            <span class="fs-6"> 非常低 0 </span>
+                            <input type="range" min="0" max="20" value="10" class="slider" id="NASAslider2">
+                            <span class="fs-6"> 20 非常高 </span>
+                            <p class="fs-6"> 您選擇的值: <span id="NASAvalue2" class="fs-5"> </span> </p>
+                        </div>
+                        <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend id="NASAQuestion3" class="fs-5"> <b> 3. 生理需求 Physical Demand </b> </legend>
+                        <p class="fs-6 text-center" style="margin: 15px;"> 本次的實驗中，需運用多少體力負荷的活動（例如：轉動、控 制、行動，等等）？
+                        </p>
+                        <div class="slidecontainer text-center">
+                            <span class="fs-6"> 非常低 0 </span>
+                            <input type="range" min="0" max="20" value="10" class="slider" id="NASAslider3">
+                            <span class="fs-6"> 20 非常高 </span>
+                            <p class="fs-6"> 您選擇的值: <span id="NASAvalue3" class="fs-5"> </span> </p>
+                        </div>
+                        <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend id="NASAQuestion4" class="fs-5"> <b> 4. 自我績效 Performance </b> </legend>
+                        <p class="fs-6 text-center" style="margin: 15px;"> 本次的實驗中，您對自己答題的準確度是否滿意？
+                        </p>
+                        <div class="slidecontainer text-center">
+                            <span class="fs-6"> 非常滿意 0 </span>
+                            <input type="range" min="0" max="20" value="10" class="slider" id="NASAslider4">
+                            <span class="fs-6"> 20 非常不滿意 </span>
+                            <p class="fs-6"> 您選擇的值: <span id="NASAvalue4" class="fs-5"> </span> </p>
+                        </div>
+                        <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend id="NASAQuestion5" class="fs-5"> <b> 5. 精力耗費 Effort </b> </legend>
+                        <p class="fs-6 text-center" style="margin: 15px;"> 本次的實驗讓您感受到的難易程度為何？
+                        </p>
+                        <div class="slidecontainer text-center">
+                            <span class="fs-6"> 非常低 0 </span>
+                            <input type="range" min="0" max="20" value="10" class="slider" id="NASAslider5">
+                            <span class="fs-6"> 20 非常高 </span>
+                            <p class="fs-6"> 您選擇的值: <span id="NASAvalue5" class="fs-5"> </span> </p>
+                        </div>
+                        <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend id="NASAQuestion6" class="fs-5"> <b> 6. 挫折程度 Frustration Level </b> </legend>
+                        <p class="fs-6 text-center" style="margin: 15px;"> 本次的實驗中，您感到挫折、失敗、緊張、氣餒、無把握？
+                        </p>
+                        <div class="slidecontainer text-center">
+                            <span class="fs-6"> 非常低 0 </span>
+                            <input type="range" min="0" max="20" value="10" class="slider" id="NASAslider6">
+                            <span class="fs-6"> 20 非常高 </span>
+                            <p class="fs-6"> 您選擇的值: <span id="NASAvalue6" class="fs-5"> </span> </p>
+                        </div>
+                        <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+                </form>
+
+                <p class="QAintro fs-5 text-center"> 完成後，請使用 <font color="#F85D4F"> 「滑鼠」 </font> 按下 <font
+                        color="#F85D4F">
+                        「提交」 </font> 即可交卷。
+                </p>
+
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-NASA" class="btn btn btn-primary text-center"> 提交 </b>
+                </div>
+            </div>
+
+            <!-- Self-efficacy Page -->
+            <div id="SEPage" class="page">
+                <p class="QAintro fs-5 text-center">
+                    <b> 請您依照自己的感受，以數字（0 到 100）表達您對此回答此實驗情境有把握的程度： </b> <br>
+                    <em> 每一個實驗情境有10張照片，分別回答以下 10% － 100% 有把握的程度。 </em> <br>
+                    使用 <font color="#F85D4F"> 「滑鼠」 </font> 在下列欄位中選擇您認為最適當的選項。 <br>
+                </p>
+
+                <form id="SEForm">
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 10% 題目的評分，我很有把握。
+                        </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio1_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio1_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio1_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio1_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio1_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio1_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio1_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio1_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio1_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio1_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions10"
+                                    id="SEinlineRadio1_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio1_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 20% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio2_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio2_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio2_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio2_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio2_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio2_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio2_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio2_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio2_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio2_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions20"
+                                    id="SEinlineRadio2_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio2_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 30% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio3_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio3_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio3_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio3_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio3_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio3_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio3_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio3_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio3_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio3_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions30"
+                                    id="SEinlineRadio3_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio3_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 40% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio4_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio4_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio4_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio4_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio4_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio4_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio4_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio4_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio4_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio4_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions40"
+                                    id="SEinlineRadio4_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio4_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 50% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio5_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio5_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio5_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio5_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio5_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio5_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio5_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio5_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio5_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio5_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions50"
+                                    id="SEinlineRadio5_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio5_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 60% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio6_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio6_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio6_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio6_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio6_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio6_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio6_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio6_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio6_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio6_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions60"
+                                    id="SEinlineRadio6_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio6_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 70% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio7_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio7_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio7_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio7_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio7_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio7_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio7_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio7_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio7_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio7_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions70"
+                                    id="SEinlineRadio7_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio7_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 80% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio8_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio8_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio8_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio8_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio8_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio8_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio8_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio8_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio8_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio8_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions80"
+                                    id="SEinlineRadio8_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio8_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 90% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio9_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio9_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio9_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio9_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio9_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio9_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio9_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio9_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio9_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio9_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions90"
+                                    id="SEinlineRadio9_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio9_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="SEquestion-container">
+                        <legend class="fs-5 fw-bold" style="margin: 20px;"> 對於 100% 題目的評分，我很有把握。 </legend>
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常沒把握 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_1" value="0">
+                                <label class="form-check-label" for="SEinlineRadio10_1"> 0 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_2" value="10">
+                                <label class="form-check-label" for="SEinlineRadio10_2"> 10 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_3" value="20">
+                                <label class="form-check-label" for="SEinlineRadio10_3"> 20 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_4" value="30">
+                                <label class="form-check-label" for="SEinlineRadio10_4"> 30 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_5" value="40">
+                                <label class="form-check-label" for="SEinlineRadio10_5"> 40 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_6" value="50">
+                                <label class="form-check-label" for="SEinlineRadio10_6"> 50 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_7" value="60">
+                                <label class="form-check-label" for="SEinlineRadio10_7"> 60 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_8" value="70">
+                                <label class="form-check-label" for="SEinlineRadio10_8"> 70 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_9" value="80">
+                                <label class="form-check-label" for="SEinlineRadio10_9"> 80 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_10" value="90">
+                                <label class="form-check-label" for="SEinlineRadio10_10"> 90 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SEinlineRadioOptions100"
+                                    id="SEinlineRadio10_11" value="100">
+                                <label class="form-check-label" for="SEinlineRadio10_11"> 100 </label>
+                            </div>
+                            <span> 非常有把握 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+                </form>
+
+                <p class="QAintro fs-5 text-center"> 完成後，請使用 <font color="#F85D4F"> 「滑鼠」 </font> 按下 <font
+                        color="#F85D4F">
+                        「提交」 </font> 即可交卷。
+                </p>
+
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-SE" class="btn btn btn-primary text-center"> 提交 </b>
+                </div>
+            </div>
+
+            <!-- Self Design QA Page (5-point scale) -->
+            <div id="SelfDesignRadioPage" class="page">
+                <p class="QAintro fs-5 fw-bold text-center">
+                    請依照自己的感受，使用 <font color="#F85D4F"> 「滑鼠」 </font> 在下列欄位中選擇您認為最適當的選項。<br>
+                </p>
+
+                <form id="SDQAForm">
+                    <fieldset class="question-container" id="Q1">
+                        <p class="fs-5"> 1. 我認為 <b>補充式</b> 這類型的照片參數標籤， <br>
+                            提供了有效的資訊來協助我分辨出誤導性的照片(如下圖範例)。
+                        </p>
+
+                        <img class="SDRImage" src="./assets/QA/CCTIm.png" class="figure-img">
+
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常不同意 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions1"
+                                    id="SDinlineRadio1_1" value="1">
+                                <label class="form-check-label" for="SDinlineRadio1_1"> 1 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions1"
+                                    id="SDinlineRadio1_2" value="2">
+                                <label class="form-check-label" for="SDinlineRadio1_2"> 2 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions1"
+                                    id="SDinlineRadio1_3" value="3">
+                                <label class="form-check-label" for="SDinlineRadio1_3"> 3 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions1"
+                                    id="SDinlineRadio1_4" value="4">
+                                <label class="form-check-label" for="SDinlineRadio1_4"> 4 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions1"
+                                    id="SDinlineRadio1_5" value="5">
+                                <label class="form-check-label" for="SDinlineRadio1_5"> 5 </label>
+                            </div>
+                            <span> 非常同意 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="question-container" id="Q2">
+                        <p class="fs-5"> 2. 我認為 <b>判斷式</b> 這類型的標籤， <br>
+                            提供了有效的資訊來協助我分辨出誤導性的照片(如下圖範例)。
+                        </p>
+
+                        <img class="SDRImage" src="./assets/QA/CCTEx.png" class="figure-img">
+
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常不同意 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions2"
+                                    id="SDinlineRadio2_1" value="1">
+                                <label class="form-check-label" for="SDinlineRadio2_1"> 1 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions2"
+                                    id="SDinlineRadio2_2" value="2">
+                                <label class="form-check-label" for="SDinlineRadio2_2"> 2 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions2"
+                                    id="SDinlineRadio2_3" value="3">
+                                <label class="form-check-label" for="SDinlineRadio2_3"> 3 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions2"
+                                    id="SDinlineRadio2_4" value="4">
+                                <label class="form-check-label" for="SDinlineRadio2_4"> 4 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions2"
+                                    id="SDinlineRadio2_5" value="5">
+                                <label class="form-check-label" for="SDinlineRadio2_5"> 5 </label>
+                            </div>
+                            <span> 非常同意 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+
+                    <fieldset class="question-container" id="Q3">
+                        <p class="fs-5"> 3. 我認為 <b>混合式</b> 這類型的標籤， <br>
+                            提供了有效的資訊來協助我分辨出誤導性的照片(如下圖範例)。
+                        </p>
+
+                        <img class="SDRImage" src="./assets/QA/CCTM.png" class="figure-img">
+
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常不同意 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions3"
+                                    id="SDinlineRadio3_1" value="1">
+                                <label class="form-check-label" for="SDinlineRadio3_1"> 1 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions3"
+                                    id="SDinlineRadio3_2" value="2">
+                                <label class="form-check-label" for="SDinlineRadio3_2"> 2 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions3"
+                                    id="SDinlineRadio3_3" value="3">
+                                <label class="form-check-label" for="SDinlineRadio3_3"> 3 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions3"
+                                    id="SDinlineRadio3_4" value="4">
+                                <label class="form-check-label" for="SDinlineRadio3_4"> 4 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions3"
+                                    id="SDinlineRadio3_5" value="5">
+                                <label class="form-check-label" for="SDinlineRadio3_5"> 5 </label>
+                            </div>
+                            <span> 非常同意 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                    </fieldset>
+
+                    <fieldset class="question-container" id="Q4">
+                        <p class="fs-5"> 4. 我認為當標籤與照片 <b>同時出現</b> 時，可以幫助我分辨出誤導性的照片(如下圖範例)。 </p>
+
+                        <img class="SDRImage" src="./assets/QA/CCTM.png" class="figure-img">
+
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常不同意 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions4"
+                                    id="SDinlineRadio4_1" value="1">
+                                <label class="form-check-label" for="SDinlineRadio4_1"> 1 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions4"
+                                    id="SDinlineRadio4_2" value="2">
+                                <label class="form-check-label" for="SDinlineRadio4_2"> 2 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions4"
+                                    id="SDinlineRadio4_3" value="3">
+                                <label class="form-check-label" for="SDinlineRadio4_3"> 3 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions4"
+                                    id="SDinlineRadio4_4" value="4">
+                                <label class="form-check-label" for="SDinlineRadio4_4"> 4 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions4"
+                                    id="SDinlineRadio4_5" value="5">
+                                <label class="form-check-label" for="SDinlineRadio4_5"> 5 </label>
+                            </div>
+                            <span> 非常同意 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="question-container" id="Q5">
+                        <p class="fs-5"> 5. 我認為當標籤在 <b>事後才出現</b> 時，可以幫助我分辨出誤導性的照片(如下圖範例)。 </p>
+
+                        <img class="SDRImage_PE" src="./assets/QA/PEM.png" class="figure-img" height="350px"
+                            style="margin-bottom: 1em;">
+
+                        <div class="RadioGroup text-center">
+                            <span class="scaleCaption"> 非常不同意 </span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions5"
+                                    id="SDinlineRadio5_1" value="1">
+                                <label class="form-check-label" for="SDinlineRadio5_1"> 1 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions5"
+                                    id="SDinlineRadio5_2" value="2">
+                                <label class="form-check-label" for="SDinlineRadio5_2"> 2 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions5"
+                                    id="SDinlineRadio5_3" value="3">
+                                <label class="form-check-label" for="SDinlineRadio5_3"> 3 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions5"
+                                    id="SDinlineRadio5_4" value="4">
+                                <label class="form-check-label" for="SDinlineRadio5_4"> 4 </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="SDinlineRadioOptions5"
+                                    id="SDinlineRadio5_5" value="5">
+                                <label class="form-check-label" for="SDinlineRadio5_5"> 5 </label>
+                            </div>
+                            <span> 非常同意 </span>
+                            <div class="invalid-feedback"> 此題尚未選擇答案！ </div>
+                        </div>
+                    </fieldset>
+
+                </form>
+
+                <p class="QAintro fs-5 text-center"> 完成後，請使用 <font color="#F85D4F"> 「滑鼠」 </font> 按下 <font
+                        color="#F85D4F">
+                        「提交」 </font> 即可交卷。
+                </p>
+
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-SDQA" class="btn btn btn-primary text-center"> 提交 </b>
+                </div>
+            </div>
+
+            <!-- Self Design QA Page (5-point scale) -->
+            <div id="SelfDesignRankingPage" class="page">
+                <p class="QAintro fs-5 fw-bold text-center">
+                    請您依照自身想法，使用 <font color="#F85D4F"> 「滑鼠」 </font> 進行排序。<br>
+                </p>
+
+                <form id="SDQARanking">
+                    <fieldset id="Q1" class="question-container">
+                        <p class="fs-5"> 1. 請您依照自身想法，根據以下三種標籤排出能夠幫助你做出更準確判斷的順序。 <br>
+                            <em> (1: 最能夠幫助；3: 最不能夠幫助) </em>
+                        </p>
+
+                        <div class="ParallelContainer" style="margin-left: 10em;">
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (1) 判斷式標籤 </figcaption>
+                                    <img src="./assets/QA/CCTEx.png" height="350px" alt="Photo 1">
+                                    <select id="Explicit" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (2) 補充式標籤 </figcaption>
+                                    <img src="./assets/QA/CCTIm.png" height="350px" alt="Photo 2">
+                                    <select id="Implicit" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (3) 混合式標籤 </figcaption>
+                                    <img src="./assets/QA/CCTM.png" height="350px" alt="Photo 3">
+                                    <select id="Mix" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="Q2" class="question-container">
+                        <p class="fs-5"> 2. 請您依照自身想法，根據以下兩種標籤出現時機排出能夠幫助你做出更準確判斷的順序。<br>
+                            <em> (1: 最能夠幫助；2: 最不能夠幫助) </em>
+                        </p>
+
+                        <div class="ParallelContainer" style="margin-left: 10em;">
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (1) 同時出現 </figcaption>
+                                    <img src="./assets/QA/CCTIm.png" height="350px" alt="Photo 1">
+                                    <select id="Concurrent" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (2) 出現兩次 </figcaption>
+                                    <img class="PE" src="./assets/QA/PEIm.png" height="350px" alt="Photo 2">
+                                    <select id="Post-Exposure" class="RankingSelect"
+                                        aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="Q3" class="question-container">
+                        <p class="fs-5"> 3. 請您依照自身想法，根據以下七種實驗情境排出能夠幫助你做出更準確判斷的順序。<br>
+                            <em> (1: 最能夠幫助；7: 最不能夠幫助) </em>
+                        </p>
+
+                        <div class="ParallelContainer" style="margin-left: 10em;">
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (1) </figcaption>
+                                    <img src="./assets/QA/CCTEx.png" height="350px" alt="Photo 1">
+                                    <select id="CCTEx" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (2) </figcaption>
+                                    <img src="./assets/QA/CCTIm.png" height="350px" alt="Photo 2">
+                                    <select id="CCTIm" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (3) </figcaption>
+                                    <img src="./assets/QA/CCTM.png" height="350px" alt="Photo 3">
+                                    <select id="CCTM" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                        </div>
+
+                        <div class="ParallelContainer" style="margin-left: 5em;">
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (4) </figcaption>
+                                    <img class="PE" src="./assets/QA/PEEx.png" height="350px" alt="Photo 4">
+                                    <select id="PEEx" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (5) </figcaption>
+                                    <img class="PE" src="./assets/QA/PEIm.png" height="350px" alt="Photo 5">
+                                    <select id="PEIm" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                        </div>
+
+                        <div class="ParallelContainer" style="padding-left: 6em;">
+                            <div class="ItemContainer">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (6) </figcaption>
+                                    <img class="PE" src="./assets/QA/PEM.png" height="350px" alt="Photo 6">
+                                    <select id="PEM" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </figure>
+                            </div>
+
+                            <div class="ItemContainer" style="padding-left: 3em;">
+                                <figure class="image-container">
+                                    <figcaption class="fw-bold"> (7) </figcaption>
+                                    <img src="./assets/QA/Control.png" height="350px" alt="Photo 7">
+                                    <select id="Control" class="RankingSelect" aria-label="Default select example">
+                                        <option selected value="none">序位</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                    </select>
+                                </figure>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                </form>
+
+                <p class="QAintro fs-5 text-center"> 完成後，請使用 <font color="#F85D4F"> 「滑鼠」 </font> 按下 <font
+                        color="#F85D4F">
+                        「提交」 </font> 即可交卷。
+                </p>
+
+                <!--- 送出按鈕 --->
+                <div class="btn-submit text-center">
+                    <button id="btn-SDRanking" class="btn btn btn-primary text-center"> 提交 </b>
+                </div>
+            </div>
+
+            <!-- Download Page -->
+            <div id="DownloadPage" class="page">
+                <p class="headerintro fs-4 text-center" style="margin-top: 400px;">
+                    完成所有題目，請按下 <font color="#F85D4F"> 「空白鍵」 </font> 結束作答。 <br>
+                </p>
+            </div>
+
+            <!-- Last Page -->
+            <div id="LastPage" class="page">
+                <p class="headerintro fs-4 text-center" style="margin-top: 400px;">
+                    謝謝您的參與，如果不需要上洗手間，將會直接進行訪談階段。 <br>
+                </p>
+            </div>
+
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <!-- Include JQuery -->
+        <script src="lab_study.js"></script> <!-- Connect JS file -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.4/xlsx.full.min.js"></script>
+    </div>
+</body>
+
+
+</html>
