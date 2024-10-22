@@ -22,7 +22,8 @@
   網頁的 HTML 檔案，負責結構和內容的展示。
 
 - **[predictions.json](./predictions.json)**  
-  Lab Study中70張照片的各項 Visual Features 的數值，用來跟對應的 Visual Features 基準值做比較，進而顯示該標籤。  
+  Lab Study中70張照片的各項 Visual Features 的數值，用來跟對應的 Visual Features 基準值做比較，進而顯示該標籤。
+  
   [註] 這些對應的 Visual Features 基準值 請參考 [Visual Features 基準值生成](../Benchmark_of_Visual_Features)。
 
 - **[lab_study.js](./lab_study.js)**  
